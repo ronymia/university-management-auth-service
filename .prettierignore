@@ -1,0 +1,6 @@
+node_modules
+.husky
+logs
+.env
+.gitignore
+tsconfig.js
