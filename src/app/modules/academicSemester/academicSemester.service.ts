@@ -27,6 +27,13 @@ const createAcademicSemester = async (
     return result;
 };
 
+const getSingleAcademicSemester = async (
+    id: string,
+): Promise<IAcademicSemester | null> => {
+    const result = await AcademicSemester.findById(id);
+    return result;
+};
+
 const getAllAcademicSemesters = async (
     filters: IAcademicSemesterFilters,
     paginationOptions: IPaginationOptions,
@@ -113,4 +120,5 @@ const getAllAcademicSemesters = async (
 export const AcademicSemesterService = {
     createAcademicSemester,
     getAllAcademicSemesters,
+    getSingleAcademicSemester,
 };
