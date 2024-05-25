@@ -6,6 +6,7 @@ import { IAcademicSemester } from './academicSemester.interface';
 import { AcademicSemesterService } from './academicSemester.service';
 import pick from '../../../shared/pick';
 import { paginationFields } from '../../../constant/pagination';
+import { academicSemesterFilterableFields } from './academicSemester.constant';
 
 // create semester
 const createAcademicSemester = catchAsync(
@@ -29,12 +30,13 @@ const createAcademicSemester = catchAsync(
 // get all semesters
 const getAllAcademicSemesters = catchAsync(
     async (req: Request, res: Response, next: NextFunction) => {
+        const filters = pick(req.query, academicSemesterFilterableFields);
         const paginationOptions = pick(req.query, paginationFields);
 
-        const result =
-            await AcademicSemesterService.getAllAcademicSemesters(
-                paginationOptions,
-            );
+        const result = await AcademicSemesterService.getAllAcademicSemesters(
+            filters,
+            paginationOptions,
+        );
 
         sendResponse<IAcademicSemester[]>(res, {
             statusCode: httpStatus.OK,
