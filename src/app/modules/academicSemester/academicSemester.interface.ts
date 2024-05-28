@@ -22,7 +22,7 @@ export type IAcademicSemesterFilters = { searchTerm: string };
 
 export type IAcademicSemester = {
     title: IAcademicSemesterTitles;
-    year: number;
+    year: string;
     code: IAcademicSemesterCodes;
     startMonth: Month;
     endMonth: Month;

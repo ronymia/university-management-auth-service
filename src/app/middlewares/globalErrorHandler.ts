@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-expressions */
 import { ErrorRequestHandler } from 'express';
 import { IGenericErrorMessage } from '../../interfaces/error';
 import config from '../../config';
@@ -8,20 +9,18 @@ import { ZodError } from 'zod';
 import handleZodError from '../../errors/handleZodError';
 import handleCastError from '../../errors/handleCastError';
 
-const globalErrorHandler: ErrorRequestHandler = async (
-    error,
-    req,
-    res,
-    next,
-) => {
+const globalErrorHandler: ErrorRequestHandler = async (error, req, res) => {
+    //Debug
     config.env === 'development'
         ? console.log(`🐱‍🏍 globalErrorHandler ~~`, error)
         : errorLogger.error(`🐱‍🏍 globalErrorHandler ~~`, error);
 
+    // defined response properties
     let statusCode = 500;
     let message = 'Something went wrong';
     let errorMessages: IGenericErrorMessage[] = [];
 
+    //validation error message
     if (error?.name === 'ValidationError') {
         const simplifiedError = handleValidationError(error);
         statusCode = simplifiedError?.statusCode;
@@ -59,15 +58,13 @@ const globalErrorHandler: ErrorRequestHandler = async (
               ]
             : [];
     }
-    // res.send(error);
+    //
     res.status(statusCode).json({
         success: false,
         message,
         errorMessages,
         stack: config.env !== 'production' ? error?.stack : undefined,
     });
-
-    next();
 };
 
 export default globalErrorHandler;
