@@ -117,8 +117,40 @@ const getAllAcademicSemesters = async (
     };
 };
 
+const updateAcademicSemester = async (
+    id: string,
+    payload: Partial<IAcademicSemester>,
+): Promise<IAcademicSemester | null> => {
+    if (
+        payload.title &&
+        payload.code &&
+        academicSemesterTitleCodeMapper[payload.title] !== payload.code
+    ) {
+        throw new ApiError(
+            httpStatus.UNPROCESSABLE_ENTITY,
+            'Invalid academic semester code',
+        );
+    }
+
+    const result = await AcademicSemester.findOneAndUpdate(
+        { _id: id },
+        payload,
+        { new: true },
+    );
+    return result;
+};
+
+const deleteAcademicSemester = async (
+    id: string,
+): Promise<IAcademicSemester | null> => {
+    const result = await AcademicSemester.findByIdAndDelete(id);
+    return result;
+};
+
 export const AcademicSemesterService = {
     createAcademicSemester,
     getAllAcademicSemesters,
     getSingleAcademicSemester,
+    updateAcademicSemester,
+    deleteAcademicSemester,
 };
