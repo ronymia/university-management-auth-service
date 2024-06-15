@@ -28,4 +28,4 @@ export type IAcademicSemester = {
     endMonth: Month;
 };
 
-export type AcademicSemesterModel = Model<IAcademicSemester>;
+export type AcademicSemesterModel = Model<IAcademicSemester, object>;

@@ -1,26 +1,93 @@
+import mongoose from 'mongoose';
 import config from '../../../config/index';
 import ApiError from '../../../errors/ApiError';
+import { IAcademicSemester } from '../academicSemester/academicSemester.interface';
+import { AcademicSemester } from '../academicSemester/academicSemester.model';
+import { IStudent } from '../student/student.interface';
 import { IUser } from './user.interface';
 import { User } from './user.model';
-import { generateUserId } from './user.utils';
+import { generateStudentId } from './user.utils';
+import { Student } from '../student/student.model';
+import httpStatus from 'http-status-codes';
 
-const createUserService = async (user: IUser): Promise<IUser | null> => {
-    // auto generated incremental id
-    const id = await generateUserId();
-    user.id = id;
-    // // default password
+const createStudent = async (
+    student: IStudent,
+    user: IUser,
+): Promise<IUser | null> => {
+    // SET ROLE
+    user.role = 'student';
+
+    // SET DEFAULT PASSWORD
     if (!user.password) {
-        user.password = config.default_user_pass as string;
+        user.password = config.default_student_pass as string;
     }
 
-    const createdUser = await User.create(user);
+    // GET ACADEMIC SEMESTER
+    const academicSemester = (await AcademicSemester.findById(
+        student.academicSemester,
+    )) as IAcademicSemester | null;
 
-    if (!createdUser) {
-        throw new ApiError(400, 'Failed to create user!');
+    let newUserData = null;
+    const session = await mongoose.startSession();
+    try {
+        session.startTransaction();
+        // AUTO GENERATED INCREMENTAL STUDENT ID
+        const studentId = await generateStudentId(academicSemester);
+        user.id = studentId;
+        student.id = studentId;
+
+        //  CREATING STUDENT
+        const newStudent = await Student.create([student], { session });
+        if (!newStudent.length) {
+            throw new ApiError(
+                httpStatus.BAD_REQUEST,
+                'Failed to create student',
+            );
+        }
+
+        user.student = newStudent[0]._id;
+        //  CREATING USER
+        const newUser = await User.create([user], { session });
+        if (!newUser.length) {
+            throw new ApiError(
+                httpStatus.BAD_REQUEST,
+                'Failed to create student',
+            );
+        }
+
+        newUserData = newUser[0];
+        session.commitTransaction();
+        session.endSession();
+    } catch (error) {
+        session.abortTransaction();
+        session.endSession();
+        throw error;
     }
-    return createdUser;
+
+    if (newUserData) {
+        newUserData = await User.findOne({ id: newUserData.id }).populate({
+            path: 'student',
+            // model: 'Student',
+            populate: [
+                {
+                    path: 'academicSemester',
+                    // model: 'AcademicSemester',
+                },
+                {
+                    path: 'academicDepartment',
+                    // model: 'AcademicDepartment',
+                },
+                {
+                    path: 'academicFaculty',
+                    // model: 'AcademicFaculty',
+                },
+            ],
+        });
+    }
+
+    return newUserData;
 };
 
 export const UserService = {
-    createUserService,
+    createStudent,
 };
