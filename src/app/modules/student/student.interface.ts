@@ -65,3 +65,12 @@ export type IStudent = {
 };
 
 export type StudentModel = Model<IStudent, object>;
+
+export type IStudentFilters = {
+    searchTerm?: string;
+    id?: string;
+    bloodGroup?: string;
+    email?: string;
+    contactNo?: string;
+    emergencyContactNo?: string;
+};

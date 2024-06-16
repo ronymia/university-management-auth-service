@@ -18,7 +18,12 @@ export type IAcademicSemesterTitles = 'Autumn' | 'Summer' | 'Fall';
 
 export type IAcademicSemesterCodes = '01' | '02' | '03';
 
-export type IAcademicSemesterFilters = { searchTerm: string };
+export type IAcademicSemesterFilters = {
+    searchTerm?: string;
+    title?: string;
+    code?: string;
+    year?: string;
+};
 
 export type IAcademicSemester = {
     title: IAcademicSemesterTitles;
