@@ -1,11 +1,17 @@
-import mongoose from 'mongoose';
-import config from './config/index';
-import app from './app';
-import { logger, errorLogger } from './shared/logger';
 import { Server } from 'http';
+import mongoose from 'mongoose';
+import app from './app';
+import config from './config/index';
+import { errorLogger, logger } from './shared/logger';
 
-async function dbConnect() {
-    let server: Server;
+process.on('uncaughtException', (error) => {
+    errorLogger.error(error);
+    process.exit(1);
+});
+
+let server: Server;
+
+async function DbConnect() {
     try {
         await mongoose.connect(config.database_url as string);
         logger.info(`🛢   Database is connected successfully`);
@@ -16,6 +22,7 @@ async function dbConnect() {
     } catch (err) {
         errorLogger.error('Failed to connect database', err);
     }
+
     process.on('unhandledRejection', (error) => {
         if (server) {
             server.close(() => {
@@ -28,4 +35,11 @@ async function dbConnect() {
     });
 }
 
-dbConnect();
+DbConnect();
+
+process.on('SIGTERM', () => {
+    logger.info('SIGTERM is received');
+    if (server) {
+        server.close();
+    }
+});

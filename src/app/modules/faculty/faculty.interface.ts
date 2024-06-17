@@ -1,8 +1,6 @@
 import { Model, Types } from 'mongoose';
-import { IAcademicSemester } from '../academicSemester/academicSemester.interface';
 import { IAcademicDepartment } from '../academicDepartment/academicDepartment.interface';
 import { IAcademicFaculty } from '../academicFaculty/academicFaculty.interface';
-// import { BLOOD_GROUP } from './student.constant';
 
 // export enum GENDER {
 //     male = 'male',
@@ -20,6 +18,7 @@ export type IBloodGroup =
     | 'O-';
 
 export type IGender = 'male' | 'female';
+export type IDesignation = 'Professor' | 'Lecturer';
 
 export type FullName = {
     firstName: string;
@@ -27,24 +26,7 @@ export type FullName = {
     lastName: string;
 };
 
-export type Guardian = {
-    fatherName: string;
-    fatherOccupation: string;
-    fatherContactNo: string;
-    motherName: string;
-    motherOccupation: string;
-    motherContactNo: string;
-    address: string;
-};
-
-export type LocalGuardian = {
-    name: string;
-    occupation: string;
-    contactNo: string;
-    address: string;
-};
-
-export type IStudent = {
+export type IFaculty = {
     id?: string;
     name: FullName;
     // gender: GENDER.male | GENDER.female;
@@ -56,17 +38,15 @@ export type IStudent = {
     emergencyContactNo: string;
     presentAddress: string;
     permanentAddress: string;
-    guardian: Guardian;
-    localGuardian: LocalGuardian;
+    designation: IDesignation;
     profileImage?: string;
-    academicSemester: Types.ObjectId | IAcademicSemester;
     academicDepartment: Types.ObjectId | IAcademicDepartment;
     academicFaculty: Types.ObjectId | IAcademicFaculty;
 };
 
-export type StudentModel = Model<IStudent, object>;
+export type FacultyModel = Model<IFaculty, object>;
 
-export type IStudentFilters = {
+export type IFacultyFilters = {
     searchTerm?: string;
     id?: string;
     bloodGroup?: string;

@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-expressions */
-import { ErrorRequestHandler } from 'express';
+import { ErrorRequestHandler, NextFunction } from 'express';
 import { IGenericErrorMessage } from '../../interfaces/error';
 import config from '../../config';
 import handleValidationError from '../../errors/handleValidationError';
@@ -9,7 +9,12 @@ import { ZodError } from 'zod';
 import handleZodError from '../../errors/handleZodError';
 import handleCastError from '../../errors/handleCastError';
 
-const globalErrorHandler: ErrorRequestHandler = async (error, req, res) => {
+const globalErrorHandler: ErrorRequestHandler = async (
+    error,
+    req,
+    res,
+    next: NextFunction,
+) => {
     //Debug
     config.env === 'development'
         ? console.log(`🐱‍🏍 globalErrorHandler ~~`, error)
