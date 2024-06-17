@@ -1,5 +1,8 @@
 import { z } from 'zod';
 import { bloodGroup, gender } from '../student/student.constant';
+import { designation } from '../faculty/faculty.constant';
+
+//
 const createStudentZodSchema = z.object({
     body: z.object({
         password: z.string().optional(),
@@ -72,6 +75,49 @@ const createStudentZodSchema = z.object({
     }),
 });
 
+// Faculty
+const createFacultyZodSchema = z.object({
+    body: z.object({
+        password: z.string().optional(),
+        faculty: z.object({
+            name: z.object({
+                firstName: z.string({
+                    required_error: 'First Name is required',
+                }),
+                middleName: z.string().optional(),
+                lastName: z.string({ required_error: 'Last Name is required' }),
+            }),
+            gender: z.enum([...gender] as [string, ...string[]]).optional(),
+            dateOfBirth: z.string().optional(),
+            email: z.string({ required_error: 'Email is required' }),
+            bloodGroup: z
+                .enum([...bloodGroup] as [string, ...string[]])
+                .optional(),
+            contactNo: z.string({ required_error: 'Contact is required' }),
+            emergencyContactNo: z.string({
+                required_error: 'Emergency Contact is required',
+            }),
+            presentAddress: z.string({
+                required_error: 'Present Address is required',
+            }),
+            permanentAddress: z.string({
+                required_error: 'Permanent Address is required',
+            }),
+            designation: z.enum([...designation] as [string, ...string[]], {
+                required_error: 'Designation is required',
+            }),
+            profileImage: z.string().optional(),
+            academicDepartment: z.string({
+                required_error: 'Academic Department is required',
+            }),
+            academicFaculty: z.string({
+                required_error: 'Academic Faculty is required',
+            }),
+        }),
+    }),
+});
+
 export const UserValidation = {
     createStudentZodSchema,
+    createFacultyZodSchema,
 };
