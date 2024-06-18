@@ -8,7 +8,7 @@ import { IAcademicDepartment } from './academicDepartment.interface';
 import { AcademicDepartmentService } from './academicDepartment.service';
 import { academicDepartmentFilterableFields } from './academicDepartment.constant';
 
-// create faculty
+// create
 const createAcademicDepartment = catchAsync(
     async (req: Request, res: Response) => {
         const { ...academicDepartmentData } = req.body;
@@ -25,7 +25,7 @@ const createAcademicDepartment = catchAsync(
     },
 );
 
-// get single Department
+// get single
 const getSingleAcademicDepartment = catchAsync(
     async (req: Request, res: Response) => {
         const { id } = req.params;
@@ -41,16 +41,17 @@ const getSingleAcademicDepartment = catchAsync(
     },
 );
 
-// get all Department
-const getAllAcademicDepartment = catchAsync(
+// get all
+const getAllAcademicDepartments = catchAsync(
     async (req: Request, res: Response) => {
         const filters = pick(req.query, academicDepartmentFilterableFields);
         const paginationOptions = pick(req.query, paginationFields);
 
-        const result = await AcademicDepartmentService.getAllAcademicDepartment(
-            filters,
-            paginationOptions,
-        );
+        const result =
+            await AcademicDepartmentService.getAllAcademicDepartments(
+                filters,
+                paginationOptions,
+            );
 
         sendResponse<IAcademicDepartment[]>(res, {
             statusCode: httpStatus.OK,
@@ -62,7 +63,7 @@ const getAllAcademicDepartment = catchAsync(
     },
 );
 
-// update single Department
+// update single
 const updateAcademicDepartment = catchAsync(
     async (req: Request, res: Response) => {
         const { id } = req.params;
@@ -80,7 +81,7 @@ const updateAcademicDepartment = catchAsync(
     },
 );
 
-// delete single Department
+// delete single
 const deleteAcademicDepartment = catchAsync(
     async (req: Request, res: Response) => {
         const { id } = req.params;
@@ -99,7 +100,7 @@ const deleteAcademicDepartment = catchAsync(
 export const AcademicDepartmentController = {
     createAcademicDepartment,
     getSingleAcademicDepartment,
-    getAllAcademicDepartment,
+    getAllAcademicDepartments,
     updateAcademicDepartment,
     deleteAcademicDepartment,
 };

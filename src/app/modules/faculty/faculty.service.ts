@@ -14,7 +14,7 @@ const getSingleFaculty = async (id: string): Promise<IFaculty | null> => {
     return result;
 };
 
-const getAllFaculty = async (
+const getAllFaculties = async (
     filters: IFacultyFilters,
     paginationOptions: IPaginationOptions,
 ): Promise<IGenericResponse<IFaculty[]>> => {
@@ -113,7 +113,7 @@ const deleteFaculty = async (id: string): Promise<IFaculty | null> => {
 };
 
 export const FacultyService = {
-    getAllFaculty,
+    getAllFaculties,
     getSingleFaculty,
     updateFaculty,
     deleteFaculty,
