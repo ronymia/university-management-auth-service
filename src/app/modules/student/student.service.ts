@@ -14,7 +14,7 @@ const getSingleStudent = async (id: string): Promise<IStudent | null> => {
     return result;
 };
 
-const getAllStudent = async (
+const getAllStudents = async (
     filters: IStudentFilters,
     paginationOptions: IPaginationOptions,
 ): Promise<IGenericResponse<IStudent[]>> => {
@@ -132,7 +132,7 @@ const deleteStudent = async (id: string): Promise<IStudent | null> => {
 };
 
 export const StudentService = {
-    getAllStudent,
+    getAllStudents,
     getSingleStudent,
     updateStudent,
     deleteStudent,

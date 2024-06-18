@@ -22,11 +22,11 @@ const getSingleStudent = catchAsync(async (req: Request, res: Response) => {
 });
 
 // get all semesters
-const getAllStudent = catchAsync(async (req: Request, res: Response) => {
+const getAllStudents = catchAsync(async (req: Request, res: Response) => {
     const filters = pick(req.query, studentFilterableFields);
     const paginationOptions = pick(req.query, paginationFields);
 
-    const result = await StudentService.getAllStudent(
+    const result = await StudentService.getAllStudents(
         filters,
         paginationOptions,
     );
@@ -67,7 +67,7 @@ const deleteStudent = catchAsync(async (req: Request, res: Response) => {
 });
 
 export const StudentController = {
-    getAllStudent,
+    getAllStudents,
     getSingleStudent,
     updateStudent,
     deleteStudent,

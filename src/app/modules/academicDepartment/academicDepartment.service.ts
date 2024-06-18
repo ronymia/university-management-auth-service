@@ -19,12 +19,11 @@ const createAcademicDepartment = async (
 const getSingleAcademicDepartment = async (
     id: string,
 ): Promise<IAcademicDepartment | null> => {
-    const result =
-        await AcademicDepartment.findById(id).populate('academicFaculty');
+    const result = await AcademicDepartment.findById(id);
     return result;
 };
 
-const getAllAcademicDepartment = async (
+const getAllAcademicDepartments = async (
     filters: IAcademicDepartmentFilters,
     paginationOptions: IPaginationOptions,
 ): Promise<IGenericResponse<IAcademicDepartment[]>> => {
@@ -90,13 +89,12 @@ const getAllAcademicDepartment = async (
         sortCondition[sortBy] = sortOrder;
     }
     const result = await AcademicDepartment.find(whereCondition)
-        .populate('academicFaculty')
         .sort(sortCondition)
         .skip(skip)
         .limit(limit);
 
     //
-    const total = await AcademicDepartment.countDocuments();
+    const total = await AcademicDepartment.countDocuments(whereCondition);
 
     return {
         meta: {
@@ -116,7 +114,7 @@ const updateAcademicDepartment = async (
         { _id: id },
         payload,
         { new: true },
-    ).populate('academicFaculty');
+    );
     return result;
 };
 
@@ -129,7 +127,7 @@ const deleteAcademicDepartment = async (
 
 export const AcademicDepartmentService = {
     createAcademicDepartment,
-    getAllAcademicDepartment,
+    getAllAcademicDepartments,
     getSingleAcademicDepartment,
     updateAcademicDepartment,
     deleteAcademicDepartment,

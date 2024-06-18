@@ -43,12 +43,12 @@ const getSingleAcademicFaculty = catchAsync(
 );
 
 // get all Faculty
-const getAllAcademicFaculty = catchAsync(
+const getAllAcademicFaculties = catchAsync(
     async (req: Request, res: Response) => {
         const filters = pick(req.query, academicFacultyFilterableFields);
         const paginationOptions = pick(req.query, paginationFields);
 
-        const result = await AcademicFacultyService.getAllAcademicFaculty(
+        const result = await AcademicFacultyService.getAllAcademicFaculties(
             filters,
             paginationOptions,
         );
@@ -99,7 +99,7 @@ const deleteAcademicFaculty = catchAsync(
 export const AcademicFacultyController = {
     createAcademicFaculty,
     getSingleAcademicFaculty,
-    getAllAcademicFaculty,
+    getAllAcademicFaculties,
     updateAcademicFaculty,
     deleteAcademicFaculty,
 };

@@ -12,18 +12,22 @@ import { AcademicFaculty } from './academicFaculty.model';
 const createAcademicFaculty = async (
     payload: IAcademicFaculty,
 ): Promise<IAcademicFaculty | null> => {
-    const result = await AcademicFaculty.create(payload);
+    const result = (await AcademicFaculty.create(payload)).populate(
+        'academicDepartments',
+    );
     return result;
 };
 
 const getSingleAcademicFaculty = async (
     id: string,
 ): Promise<IAcademicFaculty | null> => {
-    const result = await AcademicFaculty.findById(id);
+    const result = await AcademicFaculty.findById(id).populate(
+        'academicDepartments',
+    );
     return result;
 };
 
-const getAllAcademicFaculty = async (
+const getAllAcademicFaculties = async (
     filters: IAcademicFacultyFilters,
     paginationOptions: IPaginationOptions,
 ): Promise<IGenericResponse<IAcademicFaculty[]>> => {
@@ -89,12 +93,13 @@ const getAllAcademicFaculty = async (
         sortCondition[sortBy] = sortOrder;
     }
     const result = await AcademicFaculty.find(whereCondition)
+        .populate('academicDepartments')
         .sort(sortCondition)
         .skip(skip)
         .limit(limit);
 
     //
-    const total = await AcademicFaculty.countDocuments();
+    const total = await AcademicFaculty.countDocuments(whereCondition);
 
     return {
         meta: {
@@ -114,20 +119,22 @@ const updateAcademicFaculty = async (
         { _id: id },
         payload,
         { new: true },
-    );
+    ).populate('academicDepartments');
     return result;
 };
 
 const deleteAcademicFaculty = async (
     id: string,
 ): Promise<IAcademicFaculty | null> => {
-    const result = await AcademicFaculty.findByIdAndDelete(id);
+    const result = await AcademicFaculty.findByIdAndDelete(id).populate(
+        'academicDepartments',
+    );
     return result;
 };
 
 export const AcademicFacultyService = {
     createAcademicFaculty,
-    getAllAcademicFaculty,
+    getAllAcademicFaculties,
     getSingleAcademicFaculty,
     updateAcademicFaculty,
     deleteAcademicFaculty,

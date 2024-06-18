@@ -22,11 +22,11 @@ const getSingleFaculty = catchAsync(async (req: Request, res: Response) => {
 });
 
 // ALL FACULTY
-const getAllFaculty = catchAsync(async (req: Request, res: Response) => {
+const getAllFaculties = catchAsync(async (req: Request, res: Response) => {
     const filters = pick(req.query, facultyFilterableFields);
     const paginationOptions = pick(req.query, paginationFields);
 
-    const result = await FacultyService.getAllFaculty(
+    const result = await FacultyService.getAllFaculties(
         filters,
         paginationOptions,
     );
@@ -67,7 +67,7 @@ const deleteFaculty = catchAsync(async (req: Request, res: Response) => {
 });
 
 export const FacultyController = {
-    getAllFaculty,
+    getAllFaculties,
     getSingleFaculty,
     updateFaculty,
     deleteFaculty,

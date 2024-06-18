@@ -6,19 +6,22 @@ import {
 } from './academicDepartment.interface';
 import ApiError from '../../../errors/ApiError';
 
-const academicDepartmentSchema = new Schema<IAcademicDepartment>(
+const academicDepartmentSchema = new Schema<
+    IAcademicDepartment,
+    AcademicDepartmentModel
+>(
     {
         title: {
             type: String,
             required: true,
             unique: true,
         },
-        academicFaculty: {
-            type: Schema.Types.ObjectId,
-            ref: 'AcademicFaculty',
-            required: true,
-            unique: true,
-        },
+        // academicFaculty: {
+        //     type: Schema.Types.ObjectId,
+        //     ref: 'AcademicFaculty',
+        //     required: true,
+        //     unique: true,
+        // },
     },
     {
         timestamps: true,

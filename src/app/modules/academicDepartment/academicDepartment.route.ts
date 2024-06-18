@@ -12,7 +12,7 @@ router
         ),
         AcademicDepartmentController.createAcademicDepartment,
     )
-    .get(AcademicDepartmentController.getAllAcademicDepartment);
+    .get(AcademicDepartmentController.getAllAcademicDepartments);
 
 router
     .route('/:id')
