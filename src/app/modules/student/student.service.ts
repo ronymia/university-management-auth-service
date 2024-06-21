@@ -1,13 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { SortOrder } from 'mongoose';
+import mongoose, { SortOrder } from 'mongoose';
 import ApiError from '../../../errors/ApiError';
 import { paginationHelper } from '../../../helpers/paginationHelper';
 import { IGenericResponse } from '../../../interfaces/common';
 import { IPaginationOptions } from '../../../interfaces/pagination';
-import httpStatus from 'http-status-codes';
+import httpStatus, { StatusCodes } from 'http-status-codes';
 import { IStudent, IStudentFilters } from './student.interface';
 import { Student } from './student.model';
 import { studentSearchableFields } from './student.constant';
+import { User } from '../user/user.model';
 
 const getSingleStudent = async (id: string): Promise<IStudent | null> => {
     const result = await Student.findById(id);
@@ -124,11 +125,34 @@ const updateStudent = async (
 };
 
 const deleteStudent = async (id: string): Promise<IStudent | null> => {
-    const result = await Student.findByIdAndDelete(id)
-        .populate('academicSemester')
-        .populate('academicDepartment')
-        .populate('academicFaculty');
-    return result;
+    const isExist = Student.findOne({ id });
+    if (!isExist) {
+        throw new ApiError(httpStatus.NOT_FOUND, 'Student not found');
+    }
+    const session = await mongoose.startSession();
+
+    try {
+        session.startTransaction();
+
+        const student = await Student.findByIdAndDelete(id)
+            .populate('academicSemester')
+            .populate('academicDepartment')
+            .populate('academicFaculty');
+
+        if (!student) {
+            throw new ApiError(StatusCodes.NOT_FOUND, 'Fail to delete Student');
+        }
+        await User.deleteOne({ id });
+
+        session.commitTransaction();
+        session.endSession();
+
+        return student;
+    } catch (error) {
+        session.commitTransaction();
+        session.endSession();
+        throw error;
+    }
 };
 
 export const StudentService = {
