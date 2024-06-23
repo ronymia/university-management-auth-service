@@ -1,9 +1,10 @@
 import { Schema, model } from 'mongoose';
-import { IUser, UserModel } from './user.interface';
+import { IUser, IUserMethods, UserModel } from './user.interface';
 import bcrypt from 'bcrypt';
 import config from '../../../config';
 
-const userSchema = new Schema<IUser>(
+// And a schema that knows about IUserMethods
+const userSchema = new Schema<IUser, UserModel, IUserMethods>(
     {
         id: {
             type: String,
@@ -17,6 +18,11 @@ const userSchema = new Schema<IUser>(
         password: {
             type: String,
             required: true,
+            select: 0,
+        },
+        needsChangePassword: {
+            type: Boolean,
+            default: true,
         },
         student: {
             type: Schema.Types.ObjectId,
@@ -39,11 +45,25 @@ const userSchema = new Schema<IUser>(
     },
 );
 
+userSchema.methods.isUserExist = async function (id: string) {
+    return await User.findOne(
+        { id },
+        { id: 1, password: 1, needsChangePassword: 1, role: 1 },
+    ).lean();
+};
+
+userSchema.methods.isPasswordMatch = async function (
+    givenPassword: string,
+    savedPassword: string,
+) {
+    return await bcrypt.compare(givenPassword, savedPassword);
+};
+
 userSchema.pre('save', async function (next) {
     // hash password
     this.password = await bcrypt.hash(
         this.password,
-        Number(config.default_bcrypt_saltRounds),
+        Number(config.default_bcrypt_salt_rounds),
     );
     next();
 });
