@@ -3,11 +3,12 @@ import { StatusCodes } from 'http-status-codes';
 import ApiError from '../../../errors/ApiError';
 import { User } from '../user/user.model';
 import {
+    IChangePassword,
     ILoginUser,
     ILoginUserResponse,
     IRefreshTokenResponse,
 } from './auth.interface';
-import { Secret } from 'jsonwebtoken';
+import { JwtPayload, Secret } from 'jsonwebtoken';
 import config from '../../../config';
 import { jwtHelpers } from '../../../helpers/jwtHelpers';
 
@@ -99,7 +100,60 @@ const refreshToken = async (token: string): Promise<IRefreshTokenResponse> => {
     };
 };
 
+const changePassword = async (
+    user: JwtPayload | null,
+    payload: IChangePassword,
+): Promise<void> => {
+    const { oldPassword, newPassword } = payload;
+
+    // // checking is user exist
+    // const isUserExist = await User.isUserExist(user?.userId);
+
+    //alternative way
+    const isUserExist = await User.findOne({ id: user?.userId }).select(
+        '+password',
+    );
+
+    if (!isUserExist) {
+        throw new ApiError(StatusCodes.NOT_FOUND, 'User does not exist');
+    }
+
+    // checking old password
+    const userExist = new User();
+    if (
+        isUserExist.password &&
+        !(await userExist.isPasswordMatch(oldPassword, isUserExist.password))
+    ) {
+        throw new ApiError(
+            StatusCodes.UNAUTHORIZED,
+            'Old Password is incorrect',
+        );
+    }
+
+    // // hash password before saving
+    // const newHashedPassword = await bcrypt.hash(
+    //   newPassword,
+    //   Number(config.bycrypt_salt_rounds)
+    // );
+
+    // const query = { id: user?.userId };
+    // const updatedData = {
+    //   password: newHashedPassword,  //
+    //   needsPasswordChange: false,
+    //   passwordChangedAt: new Date(), //
+    // };
+
+    // await User.findOneAndUpdate(query, updatedData);
+    // data update
+    isUserExist.password = newPassword;
+    isUserExist.needsChangePassword = false;
+
+    // updating using save()
+    isUserExist.save();
+};
+
 export const AuthService = {
     loginUser,
     refreshToken,
+    changePassword,
 };
