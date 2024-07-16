@@ -9,7 +9,7 @@ import {
     academicSemesterCodes,
 } from './academicSemester.constant';
 import ApiError from '../../../errors/ApiError';
-import httpStatus from 'http-status-codes';
+import httpStatus from 'http-status';
 
 const academicSemesterSchema = new Schema<IAcademicSemester>(
     {
@@ -60,6 +60,6 @@ academicSemesterSchema.pre('save', async function () {
 });
 
 export const AcademicSemester = model<IAcademicSemester, AcademicSemesterModel>(
-    'AcademicSemester',
+    'Academic_Semester',
     academicSemesterSchema,
 );

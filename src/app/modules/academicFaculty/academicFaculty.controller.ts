@@ -1,12 +1,12 @@
 import { Request, Response } from 'express';
 import catchAsync from '../../../shared/catchAsync';
 import sendResponse from '../../../shared/sendResponse';
-import httpStatus from 'http-status-codes';
 import { IAcademicFaculty } from './academicFaculty.interface';
 import { AcademicFacultyService } from './academicFaculty.service';
 import pick from '../../../shared/pick';
 import { academicFacultyFilterableFields } from './academicFaculty.constant';
 import { paginationFields } from '../../../constant/pagination';
+import httpStatus from 'http-status';
 
 // create faculty
 const createAcademicFaculty = catchAsync(

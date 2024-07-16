@@ -1,10 +1,10 @@
 import { Schema, model } from 'mongoose';
-import httpStatus from 'http-status-codes';
 import {
     AcademicDepartmentModel,
     IAcademicDepartment,
 } from './academicDepartment.interface';
 import ApiError from '../../../errors/ApiError';
+import httpStatus from 'http-status';
 
 const academicDepartmentSchema = new Schema<
     IAcademicDepartment,
@@ -16,12 +16,11 @@ const academicDepartmentSchema = new Schema<
             required: true,
             unique: true,
         },
-        // academicFaculty: {
-        //     type: Schema.Types.ObjectId,
-        //     ref: 'AcademicFaculty',
-        //     required: true,
-        //     unique: true,
-        // },
+        academicFaculty: {
+            type: Schema.Types.ObjectId,
+            ref: 'AcademicFaculty',
+            required: true,
+        },
     },
     {
         timestamps: true,
@@ -46,4 +45,4 @@ academicDepartmentSchema.pre('save', async function () {
 export const AcademicDepartment = model<
     IAcademicDepartment,
     AcademicDepartmentModel
->('AcademicDepartment', academicDepartmentSchema);
+>('Academic_Department', academicDepartmentSchema);

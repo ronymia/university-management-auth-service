@@ -8,7 +8,7 @@ import { adminSearchableFields } from './admin.constant';
 import { IAdmin, IAdminFilters } from './admin.interface';
 import { Admin } from './admin.model';
 import { paginationHelper } from '../../../helpers/paginationHelper';
-import { StatusCodes } from 'http-status-codes';
+import httpStatus from 'http-status';
 
 const getAllAdmins = async (
     filters: IAdminFilters,
@@ -77,7 +77,7 @@ const updateAdmin = async (
     const isExist = await Admin.findOne({ id });
 
     if (!isExist) {
-        throw new ApiError(StatusCodes.NOT_FOUND, 'Admin not found !');
+        throw new ApiError(httpStatus.NOT_FOUND, 'Admin not found !');
     }
 
     const { name, ...adminData } = payload;
@@ -102,7 +102,7 @@ const deleteAdmin = async (id: string): Promise<IAdmin | null> => {
     const isExist = await Admin.findOne({ id });
 
     if (!isExist) {
-        throw new ApiError(StatusCodes.NOT_FOUND, 'Admin not found !');
+        throw new ApiError(httpStatus.NOT_FOUND, 'Admin not found !');
     }
 
     const session = await mongoose.startSession();

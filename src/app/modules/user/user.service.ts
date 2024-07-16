@@ -12,12 +12,12 @@ import {
     generateStudentId,
 } from './user.utils';
 import { Student } from '../student/student.model';
-import httpStatus from 'http-status-codes';
 import { IFaculty } from '../faculty/faculty.interface';
 import { ENUM_USER_ROLE } from '../../../enums/user';
 import { Faculty } from '../faculty/faculty.model';
 import { IAdmin } from '../admin/admin.interface';
 import { Admin } from '../admin/admin.model';
+import httpStatus from 'http-status';
 
 const createStudent = async (
     student: IStudent,

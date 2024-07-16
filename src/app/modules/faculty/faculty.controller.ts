@@ -1,5 +1,4 @@
 import { Request, Response } from 'express';
-import httpStatus from 'http-status-codes';
 import catchAsync from '../../../shared/catchAsync';
 import sendResponse from '../../../shared/sendResponse';
 import pick from '../../../shared/pick';
@@ -7,6 +6,7 @@ import { paginationFields } from '../../../constant/pagination';
 import { FacultyService } from './faculty.service';
 import { facultyFilterableFields } from './faculty.constant';
 import { IFaculty } from './faculty.interface';
+import httpStatus from 'http-status';
 
 // SINGLE FACULTY
 const getSingleFaculty = catchAsync(async (req: Request, res: Response) => {

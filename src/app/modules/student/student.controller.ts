@@ -1,5 +1,4 @@
 import { Request, Response } from 'express';
-import httpStatus from 'http-status-codes';
 import catchAsync from '../../../shared/catchAsync';
 import sendResponse from '../../../shared/sendResponse';
 import pick from '../../../shared/pick';
@@ -7,6 +6,7 @@ import { paginationFields } from '../../../constant/pagination';
 import { IStudent } from './student.interface';
 import { StudentService } from './student.service';
 import { studentFilterableFields } from './student.constant';
+import httpStatus from 'http-status';
 
 // get single semester
 const getSingleStudent = catchAsync(async (req: Request, res: Response) => {

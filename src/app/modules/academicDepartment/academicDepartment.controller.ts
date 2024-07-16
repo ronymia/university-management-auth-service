@@ -1,7 +1,7 @@
+import httpStatus from 'http-status';
 import { Request, Response } from 'express';
 import catchAsync from '../../../shared/catchAsync';
 import sendResponse from '../../../shared/sendResponse';
-import httpStatus from 'http-status-codes';
 import pick from '../../../shared/pick';
 import { paginationFields } from '../../../constant/pagination';
 import { IAcademicDepartment } from './academicDepartment.interface';

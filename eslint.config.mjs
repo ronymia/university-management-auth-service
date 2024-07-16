@@ -30,6 +30,7 @@ export default [
             'no-console': 'off',
             '@typescript-eslint/consistent-type-definitions': ['error', 'type'],
             'prettier/prettier': ['off'],
+            '@typescript-eslint/explicit-module-boundary-types': 'off',
         },
     },
 ];
