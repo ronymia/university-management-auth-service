@@ -18,6 +18,7 @@ import { IAdmin } from '../admin/admin.interface';
 import { Admin } from '../admin/admin.model';
 import httpStatus from 'http-status';
 
+// Create Student
 const createStudent = async (
     student: IStudent,
     user: IUser,
@@ -97,6 +98,8 @@ const createStudent = async (
 
     return newUserData;
 };
+
+// Create Faculty
 const createFaculty = async (
     faculty: IFaculty,
     user: IUser,
@@ -104,7 +107,7 @@ const createFaculty = async (
     // SET ROLE
     user.role = ENUM_USER_ROLE.FACULTY;
 
-    // SET DEFAULT PASSWORD
+    // IF PASSWORD IS NOT GIVEN, SET DEFAULT PASSWORD
     if (!user.password) {
         user.password = config.default_faculty_pass as string;
     }
@@ -113,11 +116,13 @@ const createFaculty = async (
     const session = await mongoose.startSession();
     try {
         session.startTransaction();
-        // AUTO GENERATED INCREMENTAL STUDENT ID
+
+        // AUTO GENERATED INCREMENTAL FACULTY ID
         const facultyId = await generateFacultyId();
         user.id = facultyId;
+        faculty.id = facultyId;
 
-        //  CREATING STUDENT
+        //  CREATING FACULTY
         const newFaculty = await Faculty.create([faculty], { session });
         if (!newFaculty.length) {
             throw new ApiError(
@@ -126,7 +131,9 @@ const createFaculty = async (
             );
         }
 
+        //  SET Faculty _id (reference) TO user.faculty
         user.faculty = newFaculty[0]._id;
+
         //  CREATING USER
         const newUser = await User.create([user], { session });
         if (!newUser.length) {
@@ -148,15 +155,12 @@ const createFaculty = async (
     if (newUserData) {
         newUserData = await User.findOne({ id: newUserData.id }).populate({
             path: 'faculty',
-            // model: 'Student',
             populate: [
                 {
                     path: 'academicDepartment',
-                    // model: 'AcademicDepartment',
                 },
                 {
                     path: 'academicFaculty',
-                    // model: 'AcademicFaculty',
                 },
             ],
         });
