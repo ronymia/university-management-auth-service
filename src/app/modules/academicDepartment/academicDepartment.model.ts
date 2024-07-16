@@ -18,7 +18,7 @@ const academicDepartmentSchema = new Schema<
         },
         academicFaculty: {
             type: Schema.Types.ObjectId,
-            ref: 'AcademicFaculty',
+            ref: 'Academic_Faculty',
             required: true,
         },
     },
