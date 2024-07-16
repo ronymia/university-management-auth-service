@@ -1,10 +1,11 @@
+import { ENUM_USER_ROLE } from '../../../enums/user';
 import { IAcademicSemester } from '../academicSemester/academicSemester.interface';
 import { User } from './user.model';
 
 // STUDENT
 export const findLastStudentId = async (): Promise<string | undefined> => {
     const lastStudent = await User.findOne(
-        { role: 'student' },
+        { role: ENUM_USER_ROLE.STUDENT },
         { id: 1, _id: 0 },
     )
         .sort({

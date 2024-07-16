@@ -1,7 +1,6 @@
 import mongoose from 'mongoose';
 import config from '../../../config/index';
 import ApiError from '../../../errors/ApiError';
-import { IAcademicSemester } from '../academicSemester/academicSemester.interface';
 import { AcademicSemester } from '../academicSemester/academicSemester.model';
 import { IStudent } from '../student/student.interface';
 import { IUser } from './user.interface';
@@ -26,15 +25,15 @@ const createStudent = async (
     // SET ROLE
     user.role = ENUM_USER_ROLE.STUDENT;
 
-    // SET DEFAULT PASSWORD
+    // IF PASSWORD IS NOT GIVEN, SET DEFAULT PASSWORD
     if (!user.password) {
         user.password = config.default_student_pass as string;
     }
 
     // GET ACADEMIC SEMESTER
-    const academicSemester = (await AcademicSemester.findById(
+    const academicSemester = await AcademicSemester.findById(
         student.academicSemester,
-    )) as IAcademicSemester | null;
+    ).lean();
 
     let newUserData = null;
     const session = await mongoose.startSession();
@@ -45,7 +44,7 @@ const createStudent = async (
         user.id = studentId;
         student.id = studentId;
 
-        //  CREATING STUDENT
+        //  CREATING STUDENT USING SESSION
         const newStudent = await Student.create([student], { session });
         if (!newStudent.length) {
             throw new ApiError(
@@ -54,7 +53,9 @@ const createStudent = async (
             );
         }
 
+        //  SET STUDENT _id (reference) TO user.student
         user.student = newStudent[0]._id;
+
         //  CREATING USER
         const newUser = await User.create([user], { session });
         if (!newUser.length) {
