@@ -1,5 +1,4 @@
 import { Request, Response } from 'express';
-import httpStatus from 'http-status-codes';
 import catchAsync from '../../../shared/catchAsync';
 import sendResponse from '../../../shared/sendResponse';
 import { IAcademicSemester } from './academicSemester.interface';
@@ -7,6 +6,7 @@ import { AcademicSemesterService } from './academicSemester.service';
 import pick from '../../../shared/pick';
 import { paginationFields } from '../../../constant/pagination';
 import { academicSemesterFilterableFields } from './academicSemester.constant';
+import httpStatus from 'http-status';
 
 // create semester
 const createAcademicSemester = catchAsync(

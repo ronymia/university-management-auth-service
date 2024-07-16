@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { StatusCodes } from 'http-status-codes';
 import ApiError from '../../../errors/ApiError';
 import { User } from '../user/user.model';
 import {
@@ -11,13 +10,14 @@ import {
 import { JwtPayload, Secret } from 'jsonwebtoken';
 import config from '../../../config';
 import { jwtHelpers } from '../../../helpers/jwtHelpers';
+import httpStatus from 'http-status';
 
 const loginUser = async (payload: ILoginUser): Promise<ILoginUserResponse> => {
     const user = new User();
     const { id, password } = payload;
     const isUserExist = await user.isUserExist(id);
     if (!isUserExist) {
-        throw new ApiError(StatusCodes.NOT_FOUND, ' User not found');
+        throw new ApiError(httpStatus.NOT_FOUND, ' User not found');
     }
 
     // check password
@@ -26,7 +26,7 @@ const loginUser = async (payload: ILoginUser): Promise<ILoginUserResponse> => {
         (await user.isPasswordMatch(password, isUserExist.password));
 
     if (!isPasswordMatch) {
-        throw new ApiError(StatusCodes.UNAUTHORIZED, ' Password incorrect');
+        throw new ApiError(httpStatus.UNAUTHORIZED, ' Password incorrect');
     }
 
     // create JWT token and refresh token
@@ -64,14 +64,14 @@ const refreshToken = async (token: string): Promise<IRefreshTokenResponse> => {
         // Differentiate between token expiration and other errors
         if (err.name === 'TokenExpiredError') {
             throw new ApiError(
-                StatusCodes.UNAUTHORIZED,
+                httpStatus.UNAUTHORIZED,
                 'JWT token has expired',
             );
         } else if (err.name === 'JsonWebTokenError') {
-            throw new ApiError(StatusCodes.FORBIDDEN, 'Invalid JWT token');
+            throw new ApiError(httpStatus.FORBIDDEN, 'Invalid JWT token');
         } else {
             throw new ApiError(
-                StatusCodes.FORBIDDEN,
+                httpStatus.FORBIDDEN,
                 'Could not verify JWT token',
             );
         }
@@ -82,7 +82,7 @@ const refreshToken = async (token: string): Promise<IRefreshTokenResponse> => {
     const user = new User();
     const isUserExist = await user.isUserExist(userId);
     if (!isUserExist) {
-        throw new ApiError(StatusCodes.NOT_FOUND, ' User not found');
+        throw new ApiError(httpStatus.NOT_FOUND, ' User not found');
     }
     //generate new token
 
@@ -115,7 +115,7 @@ const changePassword = async (
     );
 
     if (!isUserExist) {
-        throw new ApiError(StatusCodes.NOT_FOUND, 'User does not exist');
+        throw new ApiError(httpStatus.NOT_FOUND, 'User does not exist');
     }
 
     // checking old password
@@ -125,7 +125,7 @@ const changePassword = async (
         !(await userExist.isPasswordMatch(oldPassword, isUserExist.password))
     ) {
         throw new ApiError(
-            StatusCodes.UNAUTHORIZED,
+            httpStatus.UNAUTHORIZED,
             'Old Password is incorrect',
         );
     }

@@ -4,11 +4,11 @@ import ApiError from '../../../errors/ApiError';
 import { paginationHelper } from '../../../helpers/paginationHelper';
 import { IGenericResponse } from '../../../interfaces/common';
 import { IPaginationOptions } from '../../../interfaces/pagination';
-import httpStatus from 'http-status-codes';
 import { Faculty } from './faculty.model';
 import { IFaculty, IFacultyFilters } from './faculty.interface';
 import { facultySearchableFields } from './faculty.constant';
 import { User } from '../user/user.model';
+import httpStatus from 'http-status';
 
 const getSingleFaculty = async (id: string): Promise<IFaculty | null> => {
     const result = await Faculty.findById(id);
@@ -23,11 +23,11 @@ const getAllFaculties = async (
     const { page, limit, skip, sortBy, sortOrder } =
         paginationHelper.calculatePagination(paginationOptions);
     // search and filters condition
-    const andCondition = [];
+    const andConditions = [];
 
     // search condition $or
     if (searchTerm) {
-        andCondition.push({
+        andConditions.push({
             $or: facultySearchableFields.map((field) => ({
                 [field]: {
                     $regex: searchTerm,
@@ -39,14 +39,14 @@ const getAllFaculties = async (
 
     // filters condition $and
     if (Object.keys(filtersData).length) {
-        andCondition.push({
+        andConditions.push({
             $and: Object.entries(filtersData).map(([field, value]) => ({
                 [field]: value,
             })),
         });
     }
 
-    const whereCondition = andCondition.length ? { $and: andCondition } : {};
+    const whereCondition = andConditions.length ? { $and: andConditions } : {};
 
     const sortCondition: { [keyof: string]: SortOrder } = {};
 

@@ -1,14 +1,14 @@
-import { Model, Types } from 'mongoose';
-import { IAcademicDepartment } from '../academicDepartment/academicDepartment.interface';
+import { Model } from 'mongoose';
 
 export type IAcademicFaculty = {
     title: string;
-    academicDepartments: Types.ObjectId[] | IAcademicDepartment[]; // Refer id
 };
 
-export type AcademicFacultyModel = Model<IAcademicFaculty, object>;
+export type AcademicFacultyModel = Model<
+    IAcademicFaculty,
+    Record<string, unknown>
+>;
 
 export type IAcademicFacultyFilters = {
     searchTerm?: string;
-    academicDepartment?: Types.ObjectId[];
 };

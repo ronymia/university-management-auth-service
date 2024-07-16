@@ -30,11 +30,11 @@ const getAllManagementDepartments = async (
     const { searchTerm, ...filtersData } = filters;
 
     // search and filters condition
-    const andCondition = [];
+    const andConditions = [];
 
     // search condition $or
     if (searchTerm) {
-        andCondition.push({
+        andConditions.push({
             $or: managementDepartmentSearchableFields.map((field) => ({
                 [field]: {
                     $regex: searchTerm,
@@ -46,14 +46,14 @@ const getAllManagementDepartments = async (
 
     // filters condition $and
     if (Object.keys(filtersData).length) {
-        andCondition.push({
+        andConditions.push({
             $and: Object.entries(filtersData).map(([field, value]) => ({
                 [field]: value,
             })),
         });
     }
 
-    const whereCondition = andCondition.length ? { $and: andCondition } : {};
+    const whereCondition = andConditions.length ? { $and: andConditions } : {};
 
     const { page, limit, skip, sortBy, sortOrder } =
         paginationHelper.calculatePagination(paginationOptions);

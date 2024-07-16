@@ -12,7 +12,7 @@ import {
     IAcademicSemesterFilters,
 } from './academicSemester.interface';
 import { AcademicSemester } from './academicSemester.model';
-import httpStatus from 'http-status-codes';
+import httpStatus from 'http-status';
 
 const createAcademicSemester = async (
     payload: IAcademicSemester,
@@ -41,11 +41,11 @@ const getAllAcademicSemesters = async (
     const { searchTerm, ...filtersData } = filters;
 
     // search and filters condition
-    const andCondition = [];
+    const andConditions = [];
 
     // search condition $or
     if (searchTerm) {
-        andCondition.push({
+        andConditions.push({
             $or: academicSemesterSearchableFields.map((field) => ({
                 [field]: {
                     $regex: searchTerm,
@@ -55,7 +55,7 @@ const getAllAcademicSemesters = async (
         });
     }
 
-    // const andCondition = [
+    // const andConditions = [
     //     {
     //         $or: [
     //             {
@@ -82,14 +82,14 @@ const getAllAcademicSemesters = async (
 
     // filters condition $and
     if (Object.keys(filtersData).length) {
-        andCondition.push({
+        andConditions.push({
             $and: Object.entries(filtersData).map(([field, value]) => ({
                 [field]: value,
             })),
         });
     }
 
-    const whereCondition = andCondition.length ? { $and: andCondition } : {};
+    const whereCondition = andConditions.length ? { $and: andConditions } : {};
 
     const { page, limit, skip, sortBy, sortOrder } =
         paginationHelper.calculatePagination(paginationOptions);
@@ -135,7 +135,9 @@ const updateAcademicSemester = async (
     const result = await AcademicSemester.findOneAndUpdate(
         { _id: id },
         payload,
-        { new: true },
+        {
+            new: true,
+        },
     );
     return result;
 };

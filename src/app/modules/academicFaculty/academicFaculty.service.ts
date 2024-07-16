@@ -12,18 +12,14 @@ import { AcademicFaculty } from './academicFaculty.model';
 const createAcademicFaculty = async (
     payload: IAcademicFaculty,
 ): Promise<IAcademicFaculty | null> => {
-    const result = (await AcademicFaculty.create(payload)).populate(
-        'academicDepartments',
-    );
+    const result = await AcademicFaculty.create(payload);
     return result;
 };
 
 const getSingleAcademicFaculty = async (
     id: string,
 ): Promise<IAcademicFaculty | null> => {
-    const result = await AcademicFaculty.findById(id).populate(
-        'academicDepartments',
-    );
+    const result = await AcademicFaculty.findById(id);
     return result;
 };
 
@@ -31,14 +27,18 @@ const getAllAcademicFaculties = async (
     filters: IAcademicFacultyFilters,
     paginationOptions: IPaginationOptions,
 ): Promise<IGenericResponse<IAcademicFaculty[]>> => {
+    // Extract searchTerm to implement search query
     const { searchTerm, ...filtersData } = filters;
 
-    // search and filters condition
-    const andCondition = [];
+    const { page, limit, skip, sortBy, sortOrder } =
+        paginationHelper.calculatePagination(paginationOptions);
 
-    // search condition $or
+    // search and filters condition
+    const andConditions = [];
+
+    // Search needs $or for searching in specified fields
     if (searchTerm) {
-        andCondition.push({
+        andConditions.push({
             $or: academicFacultySearchableFields.map((field) => ({
                 [field]: {
                     $regex: searchTerm,
@@ -48,7 +48,7 @@ const getAllAcademicFaculties = async (
         });
     }
 
-    // const andCondition = [
+    // const andConditions = [
     //     {
     //         $or: [
     //             {
@@ -73,27 +73,27 @@ const getAllAcademicFaculties = async (
     //     },
     // ];
 
-    // filters condition $and
+    // Filters needs $and to full fill all the conditions
     if (Object.keys(filtersData).length) {
-        andCondition.push({
+        andConditions.push({
             $and: Object.entries(filtersData).map(([field, value]) => ({
                 [field]: value,
             })),
         });
     }
 
-    const whereCondition = andCondition.length ? { $and: andCondition } : {};
-
-    const { page, limit, skip, sortBy, sortOrder } =
-        paginationHelper.calculatePagination(paginationOptions);
-
+    // Dynamic sort needs  fields to  do sorting
     const sortCondition: { [keyof: string]: SortOrder } = {};
 
     if (sortBy && sortOrder) {
         sortCondition[sortBy] = sortOrder;
     }
+
+    // If there is no condition , put {} to give all data
+    const whereCondition = andConditions.length ? { $and: andConditions } : {};
+
+    //database
     const result = await AcademicFaculty.find(whereCondition)
-        .populate('academicDepartments')
         .sort(sortCondition)
         .skip(skip)
         .limit(limit);
@@ -118,17 +118,17 @@ const updateAcademicFaculty = async (
     const result = await AcademicFaculty.findOneAndUpdate(
         { _id: id },
         payload,
-        { new: true },
-    ).populate('academicDepartments');
+        {
+            new: true,
+        },
+    );
     return result;
 };
 
 const deleteAcademicFaculty = async (
     id: string,
 ): Promise<IAcademicFaculty | null> => {
-    const result = await AcademicFaculty.findByIdAndDelete(id).populate(
-        'academicDepartments',
-    );
+    const result = await AcademicFaculty.findByIdAndDelete(id);
     return result;
 };
 

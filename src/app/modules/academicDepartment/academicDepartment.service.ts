@@ -9,32 +9,42 @@ import {
 } from './academicDepartment.interface';
 import { AcademicDepartment } from './academicDepartment.model';
 
+// create
 const createAcademicDepartment = async (
     payload: IAcademicDepartment,
 ): Promise<IAcademicDepartment | null> => {
-    const result = await AcademicDepartment.create(payload);
+    const result = (await AcademicDepartment.create(payload)).populate(
+        'academicFaculty',
+    );
     return result;
 };
 
+//get single
 const getSingleAcademicDepartment = async (
     id: string,
 ): Promise<IAcademicDepartment | null> => {
-    const result = await AcademicDepartment.findById(id);
+    const result =
+        await AcademicDepartment.findById(id).populate('academicFaculty');
     return result;
 };
 
+// Get All
 const getAllAcademicDepartments = async (
     filters: IAcademicDepartmentFilters,
     paginationOptions: IPaginationOptions,
 ): Promise<IGenericResponse<IAcademicDepartment[]>> => {
+    const { page, limit, skip, sortBy, sortOrder } =
+        paginationHelper.calculatePagination(paginationOptions);
+
+    // Extract searchTerm to implement search query
     const { searchTerm, ...filtersData } = filters;
 
     // search and filters condition
-    const andCondition = [];
+    const andConditions = [];
 
-    // search condition $or
+    // Search needs $or for searching in specified fields
     if (searchTerm) {
-        andCondition.push({
+        andConditions.push({
             $or: academicDepartmentSearchableFields.map((field) => ({
                 [field]: {
                     $regex: searchTerm,
@@ -44,7 +54,7 @@ const getAllAcademicDepartments = async (
         });
     }
 
-    // const andCondition = [
+    // const andConditions = [
     //     {
     //         $or: [
     //             {
@@ -69,31 +79,31 @@ const getAllAcademicDepartments = async (
     //     },
     // ];
 
-    // filters condition $and
+    // Filters needs $and to full fill all the conditions
     if (Object.keys(filtersData).length) {
-        andCondition.push({
+        andConditions.push({
             $and: Object.entries(filtersData).map(([field, value]) => ({
                 [field]: value,
             })),
         });
     }
 
-    const whereCondition = andCondition.length ? { $and: andCondition } : {};
-
-    const { page, limit, skip, sortBy, sortOrder } =
-        paginationHelper.calculatePagination(paginationOptions);
-
+    // Dynamic  Sort needs  field to  do sorting
     const sortCondition: { [keyof: string]: SortOrder } = {};
-
     if (sortBy && sortOrder) {
         sortCondition[sortBy] = sortOrder;
     }
+
+    // If there is no condition , put {} to give all data
+    const whereCondition = andConditions.length ? { $and: andConditions } : {};
+
+    // query in database
     const result = await AcademicDepartment.find(whereCondition)
         .sort(sortCondition)
         .skip(skip)
         .limit(limit);
 
-    //
+    // Getting total
     const total = await AcademicDepartment.countDocuments(whereCondition);
 
     return {
@@ -114,7 +124,7 @@ const updateAcademicDepartment = async (
         { _id: id },
         payload,
         { new: true },
-    );
+    ).populate('academicFaculty');
     return result;
 };
 

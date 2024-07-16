@@ -1,10 +1,10 @@
 import { Schema, model } from 'mongoose';
-import httpStatus from 'http-status-codes';
 import ApiError from '../../../errors/ApiError';
 import {
     IManagementDepartment,
     ManagementDepartmentModel,
 } from './managementDepartment.interface';
+import httpStatus from 'http-status';
 
 const managementDepartmentSchema = new Schema<
     IManagementDepartment,
@@ -40,4 +40,4 @@ managementDepartmentSchema.pre('save', async function () {
 export const ManagementDepartment = model<
     IManagementDepartment,
     ManagementDepartmentModel
->('ManagementDepartment', managementDepartmentSchema);
+>('Management_Department', managementDepartmentSchema);

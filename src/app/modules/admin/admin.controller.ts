@@ -6,7 +6,7 @@ import { adminFilterableFields } from './admin.constant';
 import { IAdmin } from './admin.interface';
 import { AdminService } from './admin.service';
 import { paginationFields } from '../../../constant/pagination';
-import { StatusCodes } from 'http-status-codes';
+import httpStatus from 'http-status';
 
 const getAllAdmins = catchAsync(async (req: Request, res: Response) => {
     const filters = pick(req.query, adminFilterableFields);
@@ -15,7 +15,7 @@ const getAllAdmins = catchAsync(async (req: Request, res: Response) => {
     const result = await AdminService.getAllAdmins(filters, paginationOptions);
 
     sendResponse<IAdmin[]>(res, {
-        statusCode: StatusCodes.OK,
+        statusCode: httpStatus.OK,
         success: true,
         message: 'Admins retrieved successfully !',
         meta: result.meta,
@@ -28,7 +28,7 @@ const getSingleAdmin = catchAsync(async (req: Request, res: Response) => {
     const result = await AdminService.getSingleAdmin(id);
 
     sendResponse<IAdmin>(res, {
-        statusCode: StatusCodes.OK,
+        statusCode: httpStatus.OK,
         success: true,
         message: 'Admin retrieved successfully !',
         data: result,
@@ -42,7 +42,7 @@ const updateAdmin = catchAsync(async (req: Request, res: Response) => {
     const result = await AdminService.updateAdmin(id, updatedData);
 
     sendResponse<IAdmin>(res, {
-        statusCode: StatusCodes.OK,
+        statusCode: httpStatus.OK,
         success: true,
         message: 'Admin updated successfully !',
         data: result,
@@ -54,7 +54,7 @@ const deleteAdmin = catchAsync(async (req: Request, res: Response) => {
     const result = await AdminService.deleteAdmin(id);
 
     sendResponse<IAdmin>(res, {
-        statusCode: StatusCodes.OK,
+        statusCode: httpStatus.OK,
         success: true,
         message: 'Admin deleted successfully !',
         data: result,

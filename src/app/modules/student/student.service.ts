@@ -4,11 +4,11 @@ import ApiError from '../../../errors/ApiError';
 import { paginationHelper } from '../../../helpers/paginationHelper';
 import { IGenericResponse } from '../../../interfaces/common';
 import { IPaginationOptions } from '../../../interfaces/pagination';
-import httpStatus, { StatusCodes } from 'http-status-codes';
 import { IStudent, IStudentFilters } from './student.interface';
 import { Student } from './student.model';
 import { studentSearchableFields } from './student.constant';
 import { User } from '../user/user.model';
+import httpStatus from 'http-status';
 
 const getSingleStudent = async (id: string): Promise<IStudent | null> => {
     const result = await Student.findById(id);
@@ -23,11 +23,11 @@ const getAllStudents = async (
     const { page, limit, skip, sortBy, sortOrder } =
         paginationHelper.calculatePagination(paginationOptions);
     // search and filters condition
-    const andCondition = [];
+    const andConditions = [];
 
     // search condition $or
     if (searchTerm) {
-        andCondition.push({
+        andConditions.push({
             $or: studentSearchableFields.map((field) => ({
                 [field]: {
                     $regex: searchTerm,
@@ -39,14 +39,14 @@ const getAllStudents = async (
 
     // filters condition $and
     if (Object.keys(filtersData).length) {
-        andCondition.push({
+        andConditions.push({
             $and: Object.entries(filtersData).map(([field, value]) => ({
                 [field]: value,
             })),
         });
     }
 
-    const whereCondition = andCondition.length ? { $and: andCondition } : {};
+    const whereCondition = andConditions.length ? { $and: andConditions } : {};
 
     const sortCondition: { [keyof: string]: SortOrder } = {};
 
@@ -140,7 +140,7 @@ const deleteStudent = async (id: string): Promise<IStudent | null> => {
             .populate('academicFaculty');
 
         if (!student) {
-            throw new ApiError(StatusCodes.NOT_FOUND, 'Fail to delete Student');
+            throw new ApiError(httpStatus.NOT_FOUND, 'Fail to delete Student');
         }
         await User.deleteOne({ id });
 
