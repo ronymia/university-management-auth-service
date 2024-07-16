@@ -78,19 +78,15 @@ const createStudent = async (
     if (newUserData) {
         newUserData = await User.findOne({ id: newUserData.id }).populate({
             path: 'student',
-            // model: 'Student',
             populate: [
                 {
                     path: 'academicSemester',
-                    // model: 'AcademicSemester',
                 },
                 {
                     path: 'academicDepartment',
-                    // model: 'AcademicDepartment',
                 },
                 {
                     path: 'academicFaculty',
-                    // model: 'AcademicFaculty',
                 },
             ],
         });
@@ -169,16 +165,18 @@ const createFaculty = async (
     return newUserData;
 };
 
+// Create Admin
 const createAdmin = async (
     admin: IAdmin,
     user: IUser,
 ): Promise<IUser | null> => {
-    // default password
+    // SET ROLE
+    user.role = ENUM_USER_ROLE.ADMIN;
+
+    // IF PASSWORD IS NOT GIVEN, SET DEFAULT PASSWORD
     if (!user.password) {
         user.password = config.default_admin_pass as string;
     }
-    // set role
-    user.role = 'admin';
 
     // generate faculty id
     let newUserAllData = null;
@@ -186,21 +184,25 @@ const createAdmin = async (
     try {
         session.startTransaction();
 
-        const id = await generateAdminId();
-        user.id = id;
-        admin.id = id;
+        // AUTO GENERATED INCREMENTAL ADMIN ID
+        const adminId = await generateAdminId();
+        user.id = adminId;
+        admin.id = adminId;
 
+        //  CREATING ADMIN USING SESSION
         const newAdmin = await Admin.create([admin], { session });
 
         if (!newAdmin.length) {
             throw new ApiError(
                 httpStatus.BAD_REQUEST,
-                'Failed to create faculty ',
+                'Failed to create Admin ',
             );
         }
 
+        //  SET ADMIN _id (reference) TO user.admin
         user.admin = newAdmin[0]._id;
 
+        //  CREATING USER
         const newUser = await User.create([user], { session });
 
         if (!newUser.length) {
