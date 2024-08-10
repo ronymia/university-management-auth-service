@@ -18,5 +18,6 @@ export type IAcademicDepartmentFilterRequest = {
 
 export type IAcademicDepartmentFilters = {
     searchTerm?: string;
+    title?: string;
     academicFaculty?: Types.ObjectId;
 };
