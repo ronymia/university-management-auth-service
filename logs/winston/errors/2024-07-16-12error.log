@@ -1,0 +1,7 @@
+Tue Jul 16 2024 12:21:55 } [PH] error: 🐱‍🏍 globalErrorHandler ~~ E11000 duplicate key error collection: university-management.students index: email_1 dup key: { email: "user2@mail.com" }
+Tue Jul 16 2024 12:23:27 } [PH] error: 🐱‍🏍 globalErrorHandler ~~ Faculty validation failed: name.lastName: Path `lastName` is required.
+Tue Jul 16 2024 12:23:52 } [PH] error: 🐱‍🏍 globalErrorHandler ~~ E11000 duplicate key error collection: university-management.faculties index: id_1 dup key: { id: null }
+Tue Jul 16 2024 12:24:13 } [PH] error: 🐱‍🏍 globalErrorHandler ~~ E11000 duplicate key error collection: university-management.faculties index: id_1 dup key: { id: null }
+Tue Jul 16 2024 12:26:25 } [PH] error: 🐱‍🏍 globalErrorHandler ~~ E11000 duplicate key error collection: university-management.faculties index: id_1 dup key: { id: null }
+Tue Jul 16 2024 12:26:44 } [PH] error: 🐱‍🏍 globalErrorHandler ~~ E11000 duplicate key error collection: university-management.faculties index: id_1 dup key: { id: null }
+Tue Jul 16 2024 12:26:50 } [PH] error: 🐱‍🏍 globalErrorHandler ~~ E11000 duplicate key error collection: university-management.faculties index: id_1 dup key: { id: null }
