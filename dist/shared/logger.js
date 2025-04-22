@@ -15,6 +15,9 @@ const loggerFormat = printf(({ level, message, label, timestamp }) => {
     const seconds = date.getSeconds();
     return `${date.toDateString()} ${hours}:${minutes}:${seconds} } [${label}] ${level}: ${message}`;
 });
+const baseLogPath = process.env.NODE_ENV === 'production' && process.env.IS_SERVERLESS
+    ? path_1.default.join('/tmp', 'logs', 'winston')
+    : path_1.default.join(process.cwd(), 'logs', 'winston');
 const logger = (0, winston_1.createLogger)({
     level: 'info',
     format: combine(label({ label: 'PH' }), timestamp(), loggerFormat),
@@ -22,7 +25,7 @@ const logger = (0, winston_1.createLogger)({
         new winston_1.transports.Console(),
         new winston_1.transports.DailyRotateFile({
             level: 'info',
-            filename: path_1.default.join(process.cwd(), 'logs', 'winston', 'successes', '%DATE%success.log'),
+            filename: path_1.default.join(baseLogPath, 'successes', '%DATE%success.log'),
             datePattern: 'YYYY-MM-DD-HH',
             zippedArchive: true,
             maxSize: '20m',
@@ -38,7 +41,7 @@ const errorLogger = (0, winston_1.createLogger)({
         new winston_1.transports.Console(),
         new winston_1.transports.DailyRotateFile({
             level: 'error',
-            filename: path_1.default.join(process.cwd(), 'logs', 'winston', 'errors', '%DATE%error.log'),
+            filename: path_1.default.join(baseLogPath, 'errors', '%DATE%error.log'),
             datePattern: 'YYYY-MM-DD-HH',
             zippedArchive: true,
             maxSize: '20m',
