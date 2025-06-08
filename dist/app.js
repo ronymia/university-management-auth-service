@@ -11,7 +11,7 @@ const index_1 = require("./app/routes/index");
 const http_status_1 = __importDefault(require("http-status"));
 const app = (0, express_1.default)();
 // using cors
-app.use((0, cors_1.default)());
+app.use((0, cors_1.default)({ origin: '*', credentials: true }));
 //parser
 app.use((0, cookie_parser_1.default)());
 app.use(express_1.default.json());

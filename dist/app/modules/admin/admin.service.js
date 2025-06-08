@@ -32,6 +32,7 @@ const admin_constant_1 = require("./admin.constant");
 const admin_model_1 = require("./admin.model");
 const paginationHelper_1 = require("../../../helpers/paginationHelper");
 const http_status_1 = __importDefault(require("http-status"));
+const redis_1 = require("../../../shared/redis");
 const getAllAdmins = (filters, paginationOptions) => __awaiter(void 0, void 0, void 0, function* () {
     const { searchTerm } = filters, filtersData = __rest(filters, ["searchTerm"]);
     const { page, limit, skip, sortBy, sortOrder } = paginationHelper_1.paginationHelper.calculatePagination(paginationOptions);
@@ -74,10 +75,11 @@ const getAllAdmins = (filters, paginationOptions) => __awaiter(void 0, void 0, v
     };
 });
 const getSingleAdmin = (id) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield admin_model_1.Admin.findOne({ id }).populate('ManagementDepartment');
+    const result = yield admin_model_1.Admin.findOne({ id }).populate('managementDepartment');
     return result;
 });
 const updateAdmin = (id, payload) => __awaiter(void 0, void 0, void 0, function* () {
+    // CHECK IF THE ADMIN EXIST
     const isExist = yield admin_model_1.Admin.findOne({ id });
     if (!isExist) {
         throw new ApiError_1.default(http_status_1.default.NOT_FOUND, 'Admin not found !');
@@ -90,9 +92,15 @@ const updateAdmin = (id, payload) => __awaiter(void 0, void 0, void 0, function*
             updatedAdminData[nameKey] = name[key];
         });
     }
+    // UPDATE THE ADMIN
     const result = yield admin_model_1.Admin.findOneAndUpdate({ id }, updatedAdminData, {
         new: true,
-    });
+    }).populate('managementDepartment');
+    // PUBLISH ON REDIS
+    if (result) {
+        yield redis_1.RedisClient.publish(admin_constant_1.EVENT_ADMIN_UPDATED, JSON.stringify(result));
+    }
+    // RETURN THE ADMIN
     return result;
 });
 const deleteAdmin = (id) => __awaiter(void 0, void 0, void 0, function* () {

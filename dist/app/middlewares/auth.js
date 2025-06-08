@@ -17,9 +17,10 @@ const jwtHelpers_1 = require("../../helpers/jwtHelpers");
 const config_1 = __importDefault(require("../../config"));
 const http_status_1 = __importDefault(require("http-status"));
 const auth = (...requiredRoles) => (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
     try {
         // check token
-        const token = req.headers.authorization;
+        const token = (_a = req.headers.authorization) === null || _a === void 0 ? void 0 : _a.split(' ')[1];
         // if token is not provided
         if (!token) {
             throw new ApiError_1.default(http_status_1.default.UNAUTHORIZED, 'You are not Authorized to access this');

@@ -114,10 +114,33 @@ const deleteAcademicFaculty = (id) => __awaiter(void 0, void 0, void 0, function
     const result = yield academicFaculty_model_1.AcademicFaculty.findByIdAndDelete(id);
     return result;
 });
+// CREATE ACADEMIC FACULTY FROM EVENT
+const createAcademicFacultyFromEvent = (event) => __awaiter(void 0, void 0, void 0, function* () {
+    yield academicFaculty_model_1.AcademicFaculty.create(event);
+});
+// UPDATE ACADEMIC FACULTY FROM EVENT
+const updateAcademicFacultyFromEvent = (event) => __awaiter(void 0, void 0, void 0, function* () {
+    yield academicFaculty_model_1.AcademicFaculty.findOneAndUpdate({ syncId: event.syncId }, {
+        $set: {
+            title: event.title,
+            syncId: event.syncId,
+        },
+    }, {
+        new: true,
+    });
+});
+// DELETE ACADEMIC FACULTY FROM EVENT
+const deleteAcademicFacultyFromEvent = (syncId) => __awaiter(void 0, void 0, void 0, function* () {
+    yield academicFaculty_model_1.AcademicFaculty.findOneAndDelete({ syncId: syncId });
+});
+// EXPORT SERVICES
 exports.AcademicFacultyService = {
     createAcademicFaculty,
     getAllAcademicFaculties,
     getSingleAcademicFaculty,
     updateAcademicFaculty,
     deleteAcademicFaculty,
+    createAcademicFacultyFromEvent,
+    updateAcademicFacultyFromEvent,
+    deleteAcademicFacultyFromEvent,
 };

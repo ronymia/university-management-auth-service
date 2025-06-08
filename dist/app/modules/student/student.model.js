@@ -121,17 +121,17 @@ const studentSchema = new mongoose_1.Schema({
     },
     academicSemester: {
         type: mongoose_1.Schema.Types.ObjectId,
-        ref: 'Academic_Semester',
+        ref: 'academicSemester',
         required: true,
     },
     academicDepartment: {
         type: mongoose_1.Schema.Types.ObjectId,
-        ref: 'Academic_Department',
+        ref: 'academicDepartment',
         required: true,
     },
     academicFaculty: {
         type: mongoose_1.Schema.Types.ObjectId,
-        ref: 'Academic_Faculty',
+        ref: 'academicFaculty',
         required: true,
     },
 }, {

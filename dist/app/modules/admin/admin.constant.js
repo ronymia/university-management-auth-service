@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.adminSearchableFields = exports.adminFilterableFields = void 0;
+exports.EVENT_ADMIN_DELETED = exports.EVENT_ADMIN_UPDATED = exports.adminSearchableFields = exports.adminFilterableFields = void 0;
 exports.adminFilterableFields = [
     'searchTerm',
     'id',
@@ -20,3 +20,6 @@ exports.adminSearchableFields = [
     'name.lastName',
     'name.middleName',
 ];
+// export const EVENT_ADMIN_CREATED = 'admin.created';
+exports.EVENT_ADMIN_UPDATED = 'admin.updated';
+exports.EVENT_ADMIN_DELETED = 'admin.deleted';
