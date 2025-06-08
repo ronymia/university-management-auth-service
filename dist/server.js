@@ -16,6 +16,9 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const app_1 = __importDefault(require("./app"));
 const index_1 = __importDefault(require("./config/index"));
 const logger_1 = require("./shared/logger");
+const redis_1 = require("./shared/redis");
+const events_1 = __importDefault(require("./app/events"));
+const DB_1 = __importDefault(require("./app/DB"));
 process.on('uncaughtException', (error) => {
     logger_1.errorLogger.error(error);
     process.exit(1);
@@ -24,8 +27,16 @@ let server;
 function DbConnect() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            yield mongoose_1.default.connect(index_1.default.database_url);
-            logger_1.logger.info(`🛢   Database is connected successfully`);
+            // REDIS CONNECT
+            yield redis_1.RedisClient.connect().then(() => __awaiter(this, void 0, void 0, function* () {
+                (0, events_1.default)();
+            }));
+            // DATABASE CONNECT
+            yield mongoose_1.default.connect(index_1.default.database_url).then(() => __awaiter(this, void 0, void 0, function* () {
+                yield (0, DB_1.default)();
+                logger_1.logger.info(`🛢   Database is connected successfully`);
+            }));
+            // SERVER
             server = app_1.default.listen(index_1.default.port, () => {
                 logger_1.logger.info(`Application  listening on port ${index_1.default.port}`);
             });

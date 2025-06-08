@@ -25,17 +25,6 @@ const AdminSchema = new mongoose_1.Schema({
         },
         required: true,
     },
-    dateOfBirth: {
-        type: String,
-    },
-    gender: {
-        type: String,
-        enum: ['male', 'female'],
-    },
-    bloodGroup: {
-        type: String,
-        enum: ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'],
-    },
     email: {
         type: String,
         unique: true,
@@ -50,6 +39,17 @@ const AdminSchema = new mongoose_1.Schema({
         type: String,
         required: true,
     },
+    dateOfBirth: {
+        type: String,
+    },
+    gender: {
+        type: String,
+        enum: ['male', 'female'],
+    },
+    bloodGroup: {
+        type: String,
+        enum: ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'],
+    },
     presentAddress: {
         type: String,
         required: true,
@@ -60,7 +60,7 @@ const AdminSchema = new mongoose_1.Schema({
     },
     managementDepartment: {
         type: mongoose_1.Schema.Types.ObjectId,
-        ref: 'Management_Department',
+        ref: 'managementDepartment',
         required: true,
     },
     designation: {

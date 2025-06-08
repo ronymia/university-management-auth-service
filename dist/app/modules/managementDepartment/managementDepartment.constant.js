@@ -5,4 +5,6 @@ exports.managementDepartmentSearchableFields = ['title'];
 exports.managementDepartmentFilterableFields = [
     'searchTerm',
     'title',
+    'syncId',
+    'id',
 ];

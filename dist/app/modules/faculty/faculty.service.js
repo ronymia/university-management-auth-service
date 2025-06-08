@@ -32,6 +32,7 @@ const faculty_model_1 = require("./faculty.model");
 const faculty_constant_1 = require("./faculty.constant");
 const user_model_1 = require("../user/user.model");
 const http_status_1 = __importDefault(require("http-status"));
+const redis_1 = require("../../../shared/redis");
 const getSingleFaculty = (id) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield faculty_model_1.Faculty.findById(id);
     return result;
@@ -104,6 +105,10 @@ const updateFaculty = (id, payload) => __awaiter(void 0, void 0, void 0, functio
     })
         .populate('academicDepartment')
         .populate('academicFaculty');
+    // PUBLISH ON REDIS
+    if (result) {
+        yield redis_1.RedisClient.publish(faculty_constant_1.EVENT_FACULTY_UPDATED, JSON.stringify(result));
+    }
     return result;
 });
 const deleteFaculty = (id) => __awaiter(void 0, void 0, void 0, function* () {
@@ -123,6 +128,10 @@ const deleteFaculty = (id) => __awaiter(void 0, void 0, void 0, function* () {
         yield user_model_1.User.deleteOne({ id });
         session.commitTransaction();
         session.endSession();
+        // PUBLISH ON REDIS
+        if (faculty) {
+            yield redis_1.RedisClient.publish(faculty_constant_1.EVENT_FACULTY_DELETED, JSON.stringify(faculty));
+        }
         return faculty;
     }
     catch (error) {

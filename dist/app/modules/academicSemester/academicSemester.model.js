@@ -42,6 +42,10 @@ const academicSemesterSchema = new mongoose_1.Schema({
         required: true,
         enum: academicSemester_constant_1.academicSemesterMonths,
     },
+    syncId: {
+        type: String,
+        required: true,
+    },
 }, {
     timestamps: true,
     toJSON: {
@@ -59,4 +63,4 @@ academicSemesterSchema.pre('save', function () {
         }
     });
 });
-exports.AcademicSemester = (0, mongoose_1.model)('Academic_Semester', academicSemesterSchema);
+exports.AcademicSemester = (0, mongoose_1.model)('academicSemester', academicSemesterSchema, 'academic_semesters');

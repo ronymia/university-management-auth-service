@@ -22,6 +22,11 @@ const academicFacultySchema = new mongoose_1.Schema({
         required: true,
         unique: true,
     },
+    syncId: {
+        type: String,
+        required: true,
+        unique: true,
+    },
 }, {
     timestamps: true,
     toJSON: {
@@ -39,4 +44,4 @@ academicFacultySchema.pre('save', function (next) {
         next();
     });
 });
-exports.AcademicFaculty = (0, mongoose_1.model)('Academic_Faculty', academicFacultySchema);
+exports.AcademicFaculty = (0, mongoose_1.model)('academicFaculty', academicFacultySchema, 'academic_faculties');

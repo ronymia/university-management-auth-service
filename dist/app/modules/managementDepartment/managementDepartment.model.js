@@ -38,4 +38,4 @@ managementDepartmentSchema.pre('save', function () {
         }
     });
 });
-exports.ManagementDepartment = (0, mongoose_1.model)('Management_Department', managementDepartmentSchema);
+exports.ManagementDepartment = (0, mongoose_1.model)('managementDepartment', managementDepartmentSchema, 'management_departments');

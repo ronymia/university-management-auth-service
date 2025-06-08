@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.studentSearchableFields = exports.studentFilterableFields = exports.gender = exports.bloodGroup = void 0;
+exports.EVENT_STUDENT_DELETED = exports.EVENT_STUDENT_UPDATED = exports.studentSearchableFields = exports.studentFilterableFields = exports.gender = exports.bloodGroup = void 0;
 exports.bloodGroup = [
     'A+',
     'A-',
@@ -30,3 +30,5 @@ exports.studentSearchableFields = [
     'email',
     'contactNo',
 ];
+exports.EVENT_STUDENT_UPDATED = 'student.updated';
+exports.EVENT_STUDENT_DELETED = 'student.deleted';

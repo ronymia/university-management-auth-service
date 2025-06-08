@@ -31,13 +31,13 @@ const config_1 = __importDefault(require("../../../config"));
 const http_status_1 = __importDefault(require("http-status"));
 const loginUser = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const loginData = __rest(req.body, []);
-    const _a = yield auth_service_1.AuthService.loginUser(loginData), { refreshToken } = _a, result = __rest(_a, ["refreshToken"]);
+    const result = yield auth_service_1.AuthService.loginUser(loginData);
     // set refresh token to cookie
     const cookieOptions = {
         secure: config_1.default.env === 'production',
         httpOnly: true,
     };
-    res.cookie('refreshToken', refreshToken, cookieOptions);
+    res.cookie('refreshToken', result.refreshToken, cookieOptions);
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,
@@ -57,7 +57,7 @@ const refreshToken = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, v
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,
-        message: 'User login successfully !',
+        message: 'New Refresh token Generated',
         data: result,
     });
 }));

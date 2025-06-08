@@ -26,23 +26,10 @@ const facultySchema = new mongoose_1.Schema({
             },
         },
     },
-    gender: {
-        type: String,
-        enum: faculty_constant_1.gender,
-        required: false,
-    },
-    dateOfBirth: {
-        type: String,
-        // required: true,
-    },
     email: {
         type: String,
         required: true,
         unique: true,
-    },
-    bloodGroup: {
-        type: String,
-        enum: faculty_constant_1.bloodGroup,
     },
     contactNo: {
         type: String,
@@ -52,6 +39,19 @@ const facultySchema = new mongoose_1.Schema({
     emergencyContactNo: {
         type: String,
         required: true,
+    },
+    gender: {
+        type: String,
+        enum: faculty_constant_1.gender,
+        required: false,
+    },
+    dateOfBirth: {
+        type: String,
+        // required: true,
+    },
+    bloodGroup: {
+        type: String,
+        enum: faculty_constant_1.bloodGroup,
     },
     presentAddress: {
         type: String,
@@ -72,12 +72,12 @@ const facultySchema = new mongoose_1.Schema({
     },
     academicDepartment: {
         type: mongoose_1.Schema.Types.ObjectId,
-        ref: 'Academic_Department',
+        ref: 'academicDepartment',
         required: true,
     },
     academicFaculty: {
         type: mongoose_1.Schema.Types.ObjectId,
-        ref: 'Academic_Faculty',
+        ref: 'academicFaculty',
         required: true,
     },
 }, {

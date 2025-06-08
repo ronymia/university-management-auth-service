@@ -24,17 +24,18 @@ exports.AcademicDepartmentService = void 0;
 const paginationHelper_1 = require("../../../helpers/paginationHelper");
 const academicDepartment_constant_1 = require("./academicDepartment.constant");
 const academicDepartment_model_1 = require("./academicDepartment.model");
-// create
+const academicFaculty_model_1 = require("../academicFaculty/academicFaculty.model");
+// CREATE ACADEMIC DEPARTMENT
 const createAcademicDepartment = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     const result = (yield academicDepartment_model_1.AcademicDepartment.create(payload)).populate('academicFaculty');
     return result;
 });
-//get single
+// GET SINGLE ACADEMIC DEPARTMENT
 const getSingleAcademicDepartment = (id) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield academicDepartment_model_1.AcademicDepartment.findById(id).populate('academicFaculty');
     return result;
 });
-// Get All
+// GET ALL ACADEMIC DEPARTMENT
 const getAllAcademicDepartments = (filters, paginationOptions) => __awaiter(void 0, void 0, void 0, function* () {
     const { page, limit, skip, sortBy, sortOrder } = paginationHelper_1.paginationHelper.calculatePagination(paginationOptions);
     // Extract searchTerm to implement search query
@@ -107,18 +108,53 @@ const getAllAcademicDepartments = (filters, paginationOptions) => __awaiter(void
         data: result,
     };
 });
+// UPDATE ACADEMIC DEPARTMENT
 const updateAcademicDepartment = (id, payload) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield academicDepartment_model_1.AcademicDepartment.findOneAndUpdate({ _id: id }, payload, { new: true }).populate('academicFaculty');
     return result;
 });
+// DELETE ACADEMIC DEPARTMENT
 const deleteAcademicDepartment = (id) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield academicDepartment_model_1.AcademicDepartment.findByIdAndDelete(id);
     return result;
 });
+// CREATE ACADEMIC DEPARTMENT FROM EVENT
+const createAcademicDepartmentFromEvent = (event) => __awaiter(void 0, void 0, void 0, function* () {
+    const getFaculty = yield academicFaculty_model_1.AcademicFaculty.findOne({
+        syncId: event.academicFacultyId,
+    });
+    yield academicDepartment_model_1.AcademicDepartment.create({
+        title: event.title,
+        academicFaculty: getFaculty === null || getFaculty === void 0 ? void 0 : getFaculty._id,
+        syncId: event.syncId,
+    });
+});
+// UPDATE ACADEMIC DEPARTMENT FROM EVENT
+const updateAcademicDepartmentFromEvent = (event) => __awaiter(void 0, void 0, void 0, function* () {
+    const getFaculty = yield academicFaculty_model_1.AcademicFaculty.findOne({
+        syncId: event.academicFacultyId,
+    });
+    yield academicDepartment_model_1.AcademicDepartment.findOneAndUpdate({ syncId: event.syncId }, {
+        $set: {
+            title: event.title,
+            academicFaculty: getFaculty === null || getFaculty === void 0 ? void 0 : getFaculty._id,
+        },
+    }, {
+        new: true,
+    });
+});
+// DELETE ACADEMIC DEPARTMENT FROM EVENT
+const deleteAcademicDepartmentFromEvent = (syncId) => __awaiter(void 0, void 0, void 0, function* () {
+    yield academicDepartment_model_1.AcademicDepartment.findOneAndDelete({ syncId: syncId });
+});
+// EXPORT SERVICES
 exports.AcademicDepartmentService = {
     createAcademicDepartment,
     getAllAcademicDepartments,
     getSingleAcademicDepartment,
     updateAcademicDepartment,
     deleteAcademicDepartment,
+    createAcademicDepartmentFromEvent,
+    updateAcademicDepartmentFromEvent,
+    deleteAcademicDepartmentFromEvent,
 };

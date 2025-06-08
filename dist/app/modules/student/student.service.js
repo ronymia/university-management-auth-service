@@ -32,10 +32,13 @@ const student_model_1 = require("./student.model");
 const student_constant_1 = require("./student.constant");
 const user_model_1 = require("../user/user.model");
 const http_status_1 = __importDefault(require("http-status"));
+const redis_1 = require("../../../shared/redis");
+// GET SINGLE STUDENT
 const getSingleStudent = (id) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield student_model_1.Student.findById(id);
     return result;
 });
+// GET ALL STUDENTS
 const getAllStudents = (filters, paginationOptions) => __awaiter(void 0, void 0, void 0, function* () {
     const { searchTerm } = filters, filtersData = __rest(filters, ["searchTerm"]);
     const { page, limit, skip, sortBy, sortOrder } = paginationHelper_1.paginationHelper.calculatePagination(paginationOptions);
@@ -83,8 +86,8 @@ const getAllStudents = (filters, paginationOptions) => __awaiter(void 0, void 0,
         data: result,
     };
 });
+// UPDATE STUDENT
 const updateStudent = (id, payload) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log(payload);
     const isExist = yield student_model_1.Student.findOne({ id });
     if (!isExist) {
         throw new ApiError_1.default(http_status_1.default.NOT_FOUND, 'Student not found');
@@ -120,8 +123,13 @@ const updateStudent = (id, payload) => __awaiter(void 0, void 0, void 0, functio
         .populate('academicSemester')
         .populate('academicDepartment')
         .populate('academicFaculty');
+    // PUBLISH ON REDIS
+    if (result) {
+        yield redis_1.RedisClient.publish(student_constant_1.EVENT_STUDENT_UPDATED, JSON.stringify(result));
+    }
     return result;
 });
+// DELETE STUDENT
 const deleteStudent = (id) => __awaiter(void 0, void 0, void 0, function* () {
     const isExist = student_model_1.Student.findOne({ id });
     if (!isExist) {
@@ -140,6 +148,10 @@ const deleteStudent = (id) => __awaiter(void 0, void 0, void 0, function* () {
         yield user_model_1.User.deleteOne({ id });
         session.commitTransaction();
         session.endSession();
+        // PUBLISH ON REDIS
+        if (student) {
+            yield redis_1.RedisClient.publish(student_constant_1.EVENT_STUDENT_DELETED, JSON.stringify(student));
+        }
         return student;
     }
     catch (error) {
@@ -148,6 +160,7 @@ const deleteStudent = (id) => __awaiter(void 0, void 0, void 0, function* () {
         throw error;
     }
 });
+// EXPORT SERVICES
 exports.StudentService = {
     getAllStudents,
     getSingleStudent,

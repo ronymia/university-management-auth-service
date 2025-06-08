@@ -24,6 +24,8 @@ const user_1 = require("../../../enums/user");
 const faculty_model_1 = require("../faculty/faculty.model");
 const admin_model_1 = require("../admin/admin.model");
 const http_status_1 = __importDefault(require("http-status"));
+const redis_1 = require("../../../shared/redis");
+const user_constant_1 = require("./user.constant");
 // Create Student
 const createStudent = (student, user) => __awaiter(void 0, void 0, void 0, function* () {
     // SET ROLE
@@ -79,6 +81,10 @@ const createStudent = (student, user) => __awaiter(void 0, void 0, void 0, funct
             ],
         });
     }
+    // PUBLISH ON REDIS
+    if (newUserData) {
+        yield redis_1.RedisClient.publish(user_constant_1.EVENT_STUDENT_CREATED, JSON.stringify(newUserData.student));
+    }
     return newUserData;
 });
 // Create Faculty
@@ -131,6 +137,10 @@ const createFaculty = (faculty, user) => __awaiter(void 0, void 0, void 0, funct
             ],
         });
     }
+    // PUBLISH ON REDIS
+    if (newUserData) {
+        yield redis_1.RedisClient.publish(user_constant_1.EVENT_FACULTY_CREATED, JSON.stringify(newUserData.faculty));
+    }
     return newUserData;
 });
 // Create Admin
@@ -181,8 +191,13 @@ const createAdmin = (admin, user) => __awaiter(void 0, void 0, void 0, function*
             ],
         });
     }
+    // PUBLISH ON REDIS
+    if (newUserAllData) {
+        yield redis_1.RedisClient.publish(user_constant_1.EVENT_ADMIN_CREATED, JSON.stringify(newUserAllData.admin));
+    }
     return newUserAllData;
 });
+// EXPORT USER SERVICES
 exports.UserService = {
     createStudent,
     createFaculty,
