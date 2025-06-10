@@ -116,7 +116,8 @@ const deleteAcademicFaculty = (id) => __awaiter(void 0, void 0, void 0, function
 });
 // CREATE ACADEMIC FACULTY FROM EVENT
 const createAcademicFacultyFromEvent = (event) => __awaiter(void 0, void 0, void 0, function* () {
-    yield academicFaculty_model_1.AcademicFaculty.create(event);
+    const result = yield academicFaculty_model_1.AcademicFaculty.create(event);
+    console.log({ result });
 });
 // UPDATE ACADEMIC FACULTY FROM EVENT
 const updateAcademicFacultyFromEvent = (event) => __awaiter(void 0, void 0, void 0, function* () {
