@@ -16,6 +16,7 @@ const initAcademicFaculty = () => __awaiter(void 0, void 0, void 0, function* ()
     // CREATE ACADEMIC FACULTY
     yield redis_1.RedisClient.subscribe(academicFaculty_constant_1.EVENT_ACADEMIC_FACULTY_CREATED, (e) => __awaiter(void 0, void 0, void 0, function* () {
         const data = JSON.parse(e);
+        console.log({ data });
         yield academicFaculty_service_1.AcademicFacultyService.createAcademicFacultyFromEvent(Object.assign(Object.assign({}, data), { syncId: data === null || data === void 0 ? void 0 : data.id }));
     }));
     // UPDATE ACADEMIC FACULTY
