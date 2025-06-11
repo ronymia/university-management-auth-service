@@ -116,11 +116,24 @@ const deleteAcademicFaculty = (id) => __awaiter(void 0, void 0, void 0, function
 });
 // CREATE ACADEMIC FACULTY FROM EVENT
 const createAcademicFacultyFromEvent = (event) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield academicFaculty_model_1.AcademicFaculty.create(event);
-    console.log({ result });
+    yield academicFaculty_model_1.AcademicFaculty.create(event);
 });
 // UPDATE ACADEMIC FACULTY FROM EVENT
 const updateAcademicFacultyFromEvent = (event) => __awaiter(void 0, void 0, void 0, function* () {
+    const getFaculty = yield academicFaculty_model_1.AcademicFaculty.findOne({ syncId: event.syncId });
+    if (!getFaculty) {
+        yield academicFaculty_model_1.AcademicFaculty.create(event);
+    }
+    else {
+        yield academicFaculty_model_1.AcademicFaculty.findOneAndUpdate({ syncId: event.syncId }, {
+            $set: {
+                title: event.title,
+                syncId: event.syncId,
+            },
+        }, {
+            new: true,
+        });
+    }
     yield academicFaculty_model_1.AcademicFaculty.findOneAndUpdate({ syncId: event.syncId }, {
         $set: {
             title: event.title,

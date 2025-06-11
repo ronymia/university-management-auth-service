@@ -134,6 +134,12 @@ const createSemesterFromEvent = (event) => __awaiter(void 0, void 0, void 0, fun
 });
 // UPDATE ACADEMIC SEMESTER FROM EVENT
 const updateAcademicSemesterFromEvent = (event) => __awaiter(void 0, void 0, void 0, function* () {
+    const getSemester = yield academicSemester_model_1.AcademicSemester.findOne({
+        syncId: event.syncId,
+    });
+    if (!getSemester) {
+        yield academicSemester_model_1.AcademicSemester.create(event);
+    }
     yield academicSemester_model_1.AcademicSemester.findOneAndUpdate({ syncId: event.syncId }, {
         $set: {
             title: event.title,

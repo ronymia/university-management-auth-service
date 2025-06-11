@@ -134,6 +134,16 @@ const updateAcademicDepartmentFromEvent = (event) => __awaiter(void 0, void 0, v
     const getFaculty = yield academicFaculty_model_1.AcademicFaculty.findOne({
         syncId: event.academicFacultyId,
     });
+    const getDepartment = yield academicDepartment_model_1.AcademicDepartment.findOne({
+        syncId: event.syncId,
+    });
+    if (!getDepartment) {
+        yield academicDepartment_model_1.AcademicDepartment.create({
+            title: event.title,
+            academicFaculty: getFaculty === null || getFaculty === void 0 ? void 0 : getFaculty._id,
+            syncId: event.syncId,
+        });
+    }
     yield academicDepartment_model_1.AcademicDepartment.findOneAndUpdate({ syncId: event.syncId }, {
         $set: {
             title: event.title,
