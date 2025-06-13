@@ -12,7 +12,14 @@ exports.bloodGroup = [
     'O-',
 ];
 exports.gender = ['male', 'female'];
-exports.designation = ['Professor', 'Lecturer'];
+exports.designation = [
+    'Professor',
+    'Lecturer',
+    'Assistant Lecturer',
+    'Assistant Professor',
+    'Associate Professor',
+    'Senior Professor',
+];
 exports.facultyFilterableFields = [
     'searchTerm',
     'email',

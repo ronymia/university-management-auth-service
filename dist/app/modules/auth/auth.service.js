@@ -19,6 +19,9 @@ const user_model_1 = require("../user/user.model");
 const config_1 = __importDefault(require("../../../config"));
 const jwtHelpers_1 = require("../../../helpers/jwtHelpers");
 const http_status_1 = __importDefault(require("http-status"));
+const admin_model_1 = require("../admin/admin.model");
+const faculty_model_1 = require("../faculty/faculty.model");
+const student_model_1 = require("../student/student.model");
 const loginUser = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     const user = new user_model_1.User();
     const { id, password } = payload;
@@ -32,6 +35,21 @@ const loginUser = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     if (!isPasswordMatch) {
         throw new ApiError_1.default(http_status_1.default.UNAUTHORIZED, ' Password incorrect');
     }
+    let getUserData = null;
+    if (isUserExist.role === 'admin') {
+        getUserData = yield admin_model_1.Admin.findOne({ id: isUserExist.id }).populate('managementDepartment');
+    }
+    else if (isUserExist.role === 'faculty') {
+        getUserData = yield faculty_model_1.Faculty.findOne({ id: isUserExist.id })
+            .populate('academicDepartment')
+            .populate('academicFaculty');
+    }
+    else if (isUserExist.role === 'student') {
+        getUserData = yield student_model_1.Student.findOne({ id: isUserExist.id })
+            .populate('academicSemester')
+            .populate('academicDepartment')
+            .populate('academicFaculty');
+    }
     // create JWT token and refresh token
     const { id: userId, role, needsChangePassword } = isUserExist;
     const accessToken = jwtHelpers_1.jwtHelpers.createToken({ userId, role }, config_1.default.jwt.secret, config_1.default.jwt.expires_in);
@@ -40,6 +58,7 @@ const loginUser = (payload) => __awaiter(void 0, void 0, void 0, function* () {
         accessToken,
         refreshToken,
         needsChangePassword,
+        user: getUserData,
     };
 });
 const refreshToken = (token) => __awaiter(void 0, void 0, void 0, function* () {
