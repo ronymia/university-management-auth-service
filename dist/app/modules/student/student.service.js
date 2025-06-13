@@ -35,7 +35,10 @@ const http_status_1 = __importDefault(require("http-status"));
 const redis_1 = require("../../../shared/redis");
 // GET SINGLE STUDENT
 const getSingleStudent = (id) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield student_model_1.Student.findById(id);
+    const result = yield student_model_1.Student.findOne({ id })
+        .populate('academicSemester')
+        .populate('academicDepartment')
+        .populate('academicFaculty');
     return result;
 });
 // GET ALL STUDENTS

@@ -33,8 +33,11 @@ const faculty_constant_1 = require("./faculty.constant");
 const user_model_1 = require("../user/user.model");
 const http_status_1 = __importDefault(require("http-status"));
 const redis_1 = require("../../../shared/redis");
+const academicDepartment_model_1 = require("../academicDepartment/academicDepartment.model");
 const getSingleFaculty = (id) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield faculty_model_1.Faculty.findById(id);
+    const result = yield faculty_model_1.Faculty.findOne({ id })
+        .populate('academicDepartment')
+        .populate('academicFaculty');
     return result;
 });
 const getAllFaculties = (filters, paginationOptions) => __awaiter(void 0, void 0, void 0, function* () {
@@ -85,11 +88,20 @@ const getAllFaculties = (filters, paginationOptions) => __awaiter(void 0, void 0
 });
 const updateFaculty = (id, payload) => __awaiter(void 0, void 0, void 0, function* () {
     //
+    const { name, academicDepartment, academicFaculty } = payload, faculty = __rest(payload, ["name", "academicDepartment", "academicFaculty"]);
+    //
     const isExist = yield faculty_model_1.Faculty.findOne({ id });
     if (!isExist) {
         throw new ApiError_1.default(http_status_1.default.NOT_FOUND, 'Faculty not found');
     }
-    const { name } = payload, faculty = __rest(payload, ["name"]);
+    // CHECK ACADEMIC DEPARTMENT
+    const getAcademicDepartment = yield academicDepartment_model_1.AcademicDepartment.findOne({
+        _id: academicDepartment,
+        academicFaculty: academicFaculty,
+    });
+    if (!getAcademicDepartment) {
+        throw new ApiError_1.default(http_status_1.default.NOT_FOUND, 'Academic department not found');
+    }
     //
     // Create a new object to hold the update data
     const studentData = Object.assign({}, faculty);
