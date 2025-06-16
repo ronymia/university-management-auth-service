@@ -88,7 +88,7 @@ const getAllFaculties = (filters, paginationOptions) => __awaiter(void 0, void 0
 });
 const updateFaculty = (id, payload) => __awaiter(void 0, void 0, void 0, function* () {
     //
-    const { name, academicDepartment, academicFaculty } = payload, faculty = __rest(payload, ["name", "academicDepartment", "academicFaculty"]);
+    const { name } = payload, faculty = __rest(payload, ["name"]);
     //
     const isExist = yield faculty_model_1.Faculty.findOne({ id });
     if (!isExist) {
@@ -96,12 +96,13 @@ const updateFaculty = (id, payload) => __awaiter(void 0, void 0, void 0, functio
     }
     // CHECK ACADEMIC DEPARTMENT
     const getAcademicDepartment = yield academicDepartment_model_1.AcademicDepartment.findOne({
-        _id: academicDepartment,
-        academicFaculty: academicFaculty,
+        _id: payload === null || payload === void 0 ? void 0 : payload.academicDepartment,
+        academicFaculty: payload === null || payload === void 0 ? void 0 : payload.academicFaculty,
     });
     if (!getAcademicDepartment) {
         throw new ApiError_1.default(http_status_1.default.NOT_FOUND, 'Academic department not found');
     }
+    // console.log({ getAcademicDepartment });
     //
     // Create a new object to hold the update data
     const studentData = Object.assign({}, faculty);

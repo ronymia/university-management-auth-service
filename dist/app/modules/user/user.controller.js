@@ -42,7 +42,7 @@ const createStudent = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, 
 // CREATE FACULTY
 const createFaculty = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const _b = req.body, { faculty } = _b, userData = __rest(_b, ["faculty"]);
-    console.log(req.body);
+    // console.log(req.body);
     const result = yield user_service_1.UserService.createFaculty(faculty, userData);
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.CREATED,
