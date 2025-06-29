@@ -27,17 +27,18 @@ exports.AuthController = void 0;
 const catchAsync_1 = __importDefault(require("../../../shared/catchAsync"));
 const sendResponse_1 = __importDefault(require("../../../shared/sendResponse"));
 const auth_service_1 = require("./auth.service");
-const config_1 = __importDefault(require("../../../config"));
 const http_status_1 = __importDefault(require("http-status"));
+const config_1 = __importDefault(require("../../../config"));
+// login
 const loginUser = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const loginData = __rest(req.body, []);
     const result = yield auth_service_1.AuthService.loginUser(loginData);
     // set refresh token to cookie
-    const cookieOptions = {
-        secure: config_1.default.env === 'production',
-        httpOnly: true,
-    };
-    res.cookie('refreshToken', result.refreshToken, cookieOptions);
+    // const cookieOptions = {
+    //     secure: config.env === 'production',
+    //     httpOnly: true,
+    // };
+    // res.cookie('refreshToken', result.refreshToken, cookieOptions);
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,
@@ -45,15 +46,16 @@ const loginUser = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void
         data: result,
     });
 }));
+// refresh token
 const refreshToken = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { refreshToken } = req.cookies;
     const result = yield auth_service_1.AuthService.refreshToken(refreshToken);
     // set refresh token to cookie
-    const cookieOptions = {
-        secure: config_1.default.env === 'production',
-        httpOnly: true,
-    };
-    res.cookie('refreshToken', result, cookieOptions);
+    // const cookieOptions = {
+    //     secure: config.env === 'production',
+    //     httpOnly: true,
+    // };
+    // res.cookie('refreshToken', result, cookieOptions);
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,
@@ -61,10 +63,26 @@ const refreshToken = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, v
         data: result,
     });
 }));
+// logout
+const logout = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    // delete refresh token from cookie
+    res.clearCookie('refreshToken', {
+        httpOnly: true,
+        secure: config_1.default.env === 'production',
+    });
+    // SEND RESPONSE
+    (0, sendResponse_1.default)(res, {
+        statusCode: 200,
+        success: true,
+        message: 'Logout successfully !',
+    });
+}));
+// change password
 const changePassword = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const user = req.user;
     const passwordData = __rest(req.body, []);
     yield auth_service_1.AuthService.changePassword(user, passwordData);
+    // SEND RESPONSE
     (0, sendResponse_1.default)(res, {
         statusCode: 200,
         success: true,
@@ -72,6 +90,7 @@ const changePassword = (0, catchAsync_1.default)((req, res) => __awaiter(void 0,
     });
 }));
 exports.AuthController = {
+    logout,
     loginUser,
     refreshToken,
     changePassword,
