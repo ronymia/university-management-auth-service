@@ -62,6 +62,7 @@ const loginUser = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     };
 });
 const refreshToken = (token) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log({ token });
     // Invalid token - synchronous
     let verifiedToken = null;
     try {
