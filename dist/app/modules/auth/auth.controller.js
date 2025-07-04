@@ -34,11 +34,11 @@ const loginUser = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void
     const loginData = __rest(req.body, []);
     const result = yield auth_service_1.AuthService.loginUser(loginData);
     // set refresh token to cookie
-    // const cookieOptions = {
-    //     secure: config.env === 'production',
-    //     httpOnly: true,
-    // };
-    // res.cookie('refreshToken', result.refreshToken, cookieOptions);
+    const cookieOptions = {
+        secure: config_1.default.env === 'production',
+        httpOnly: true,
+    };
+    res.cookie('refreshToken', result.refreshToken, cookieOptions);
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,

@@ -8,6 +8,17 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __rest = (this && this.__rest) || function (s, e) {
+    var t = {};
+    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+        t[p] = s[p];
+    if (s != null && typeof Object.getOwnPropertySymbols === "function")
+        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+                t[p[i]] = s[p[i]];
+        }
+    return t;
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -26,6 +37,7 @@ const admin_model_1 = require("../admin/admin.model");
 const http_status_1 = __importDefault(require("http-status"));
 const redis_1 = require("../../../shared/redis");
 const user_constant_1 = require("./user.constant");
+const paginationHelper_1 = require("../../../helpers/paginationHelper");
 // Create Student
 const createStudent = (student, user) => __awaiter(void 0, void 0, void 0, function* () {
     // SET ROLE
@@ -197,9 +209,123 @@ const createAdmin = (admin, user) => __awaiter(void 0, void 0, void 0, function*
     }
     return newUserAllData;
 });
+// GET ALL USERS
+const getAllUsers = (filters, paginationOptions) => __awaiter(void 0, void 0, void 0, function* () {
+    const { searchTerm } = filters, filtersData = __rest(filters, ["searchTerm"]);
+    const { page, limit, skip, sortBy, sortOrder } = paginationHelper_1.paginationHelper.calculatePagination(paginationOptions);
+    // search and filters condition
+    const andConditions = [];
+    // ❌ Always exclude SUPER_ADMIN
+    andConditions.push({
+        role: { $ne: user_1.ENUM_USER_ROLE.SUPER_ADMIN },
+    });
+    // search condition $or
+    if (searchTerm) {
+        andConditions.push({
+            $or: user_constant_1.userSearchableFields.map((field) => ({
+                [field]: {
+                    $regex: searchTerm,
+                    $options: 'i',
+                },
+            })),
+        });
+    }
+    // filters condition $and
+    if (Object.keys(filtersData).length) {
+        andConditions.push({
+            $and: Object.entries(filtersData).map(([field, value]) => ({
+                [field]: value,
+            })),
+        });
+    }
+    const whereCondition = andConditions.length ? { $and: andConditions } : {};
+    const sortCondition = {};
+    if (sortBy && sortOrder) {
+        sortCondition[sortBy] = sortOrder;
+    }
+    // QUERY
+    const result = yield user_model_1.User.find(whereCondition)
+        .populate('admin')
+        .populate('faculty')
+        .populate('student');
+    // RETURNING RESPONSE
+    return {
+        meta: {
+            page,
+            limit,
+            total: result.length,
+        },
+        data: result,
+    };
+});
+// GET SINGLE USER
+const getSingleUser = (id) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield user_model_1.User.findOne({ id: id })
+        .populate('admin')
+        .populate('faculty')
+        .populate('student');
+    return result;
+});
+// UPDATE USER
+const updateUser = (id, payload) => __awaiter(void 0, void 0, void 0, function* () {
+    // GET USER
+    const getUser = yield user_model_1.User.findOne({ id: id });
+    // CHECK USER
+    if (!getUser) {
+        throw new ApiError_1.default(http_status_1.default.NOT_FOUND, 'User not found');
+    }
+    // UPDATE USER
+    const result = yield user_model_1.User.findByIdAndUpdate({ _id: getUser._id }, payload, {
+        new: true,
+    })
+        .populate('admin')
+        .populate('faculty')
+        .populate('student');
+    return result;
+});
+// DELETE USER
+const deleteUser = (id) => __awaiter(void 0, void 0, void 0, function* () {
+    // Get the user
+    const user = yield user_model_1.User.findOne({ id })
+        .populate('admin')
+        .populate('faculty')
+        .populate('student');
+    if (!user) {
+        throw new ApiError_1.default(http_status_1.default.NOT_FOUND, 'User not found');
+    }
+    // Delete related role data
+    const session = yield mongoose_1.default.startSession();
+    try {
+        session.startTransaction();
+        if (user.admin) {
+            yield admin_model_1.Admin.findByIdAndDelete(user.admin.id, { session });
+        }
+        if (user.faculty) {
+            yield faculty_model_1.Faculty.findByIdAndDelete(user.faculty.id, { session });
+        }
+        if (user.student) {
+            yield student_model_1.Student.findByIdAndDelete(user.student.id, { session });
+        }
+        // Delete the user itself
+        const deletedUser = yield user_model_1.User.findByIdAndDelete(user._id, { session });
+        yield session.commitTransaction();
+        return deletedUser;
+    }
+    catch (error) {
+        yield session.abortTransaction();
+        throw error;
+    }
+    finally {
+        session.endSession();
+    }
+});
 // EXPORT USER SERVICES
 exports.UserService = {
     createStudent,
     createFaculty,
     createAdmin,
+    getAllUsers,
+    getSingleUser,
+    updateUser,
+    deleteUser,
 };

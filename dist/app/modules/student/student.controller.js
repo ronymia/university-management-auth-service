@@ -20,7 +20,7 @@ const pagination_1 = require("../../../constant/pagination");
 const student_service_1 = require("./student.service");
 const student_constant_1 = require("./student.constant");
 const http_status_1 = __importDefault(require("http-status"));
-// get single semester
+// get single student
 const getSingleStudent = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     const result = yield student_service_1.StudentService.getSingleStudent(id);
@@ -31,7 +31,7 @@ const getSingleStudent = (0, catchAsync_1.default)((req, res) => __awaiter(void 
         data: result,
     });
 }));
-// get all semesters
+// get all students
 const getAllStudents = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const filters = (0, pick_1.default)(req.query, student_constant_1.studentFilterableFields);
     const paginationOptions = (0, pick_1.default)(req.query, pagination_1.paginationFields);
@@ -44,7 +44,7 @@ const getAllStudents = (0, catchAsync_1.default)((req, res) => __awaiter(void 0,
         data: result.data,
     });
 }));
-// update single semester
+// update single student
 const updateStudent = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     const result = yield student_service_1.StudentService.updateStudent(id, req.body);
@@ -55,7 +55,7 @@ const updateStudent = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, 
         data: result,
     });
 }));
-// delete single semester
+// delete single student
 const deleteStudent = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     const result = yield student_service_1.StudentService.deleteStudent(id);
