@@ -108,7 +108,7 @@ const changePassword = (user, payload) => __awaiter(void 0, void 0, void 0, func
     const userExist = new user_model_1.User();
     if (isUserExist.password &&
         !(yield userExist.isPasswordMatch(oldPassword, isUserExist.password))) {
-        throw new ApiError_1.default(http_status_1.default.UNAUTHORIZED, 'Old Password is incorrect');
+        throw new ApiError_1.default(http_status_1.default.FORBIDDEN, 'Old Password is incorrect');
     }
     // // hash password before saving
     // const newHashedPassword = await bcrypt.hash(
