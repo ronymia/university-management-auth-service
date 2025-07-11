@@ -283,21 +283,21 @@ const updateUser = (id, payload) => __awaiter(void 0, void 0, void 0, function* 
         // UPDATE ADMIN
         const result = yield admin_model_1.Admin.findOneAndUpdate({ id: getUser.id }, payload, {
             new: true,
-        }).populate('admin');
+        });
         return result;
     }
     else if (getUser.role === user_1.ENUM_USER_ROLE.FACULTY) {
         // UPDATE FACULTY
         const result = yield faculty_model_1.Faculty.findOneAndUpdate({ id: getUser.id }, payload, {
             new: true,
-        }).populate('faculty');
+        });
         return result;
     }
     else if (getUser.role === user_1.ENUM_USER_ROLE.STUDENT) {
         // UPDATE STUDENT
         const result = yield student_model_1.Student.findOneAndUpdate({ id: getUser.id }, payload, {
             new: true,
-        }).populate('student');
+        });
         return result;
     }
     return null;
