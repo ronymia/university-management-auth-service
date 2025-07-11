@@ -62,7 +62,6 @@ const loginUser = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     };
 });
 const refreshToken = (token) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log({ token });
     // Invalid token - synchronous
     let verifiedToken = null;
     try {
@@ -70,7 +69,6 @@ const refreshToken = (token) => __awaiter(void 0, void 0, void 0, function* () {
     }
     catch (err) {
         // Log the error for debugging purposes
-        console.error('JWT verification error:', err);
         // Differentiate between token expiration and other errors
         if (err.name === 'TokenExpiredError') {
             throw new ApiError_1.default(http_status_1.default.UNAUTHORIZED, 'JWT token has expired');
