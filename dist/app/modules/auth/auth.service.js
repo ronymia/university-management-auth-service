@@ -96,11 +96,12 @@ const refreshToken = (token) => __awaiter(void 0, void 0, void 0, function* () {
     };
 });
 const changePassword = (user, payload) => __awaiter(void 0, void 0, void 0, function* () {
-    const { oldPassword, newPassword } = payload;
+    const { oldPassword, newPassword, id } = payload;
     // // checking is user exist
     // const isUserExist = await User.isUserExist(user?.userId);
+    const userId = id || (user === null || user === void 0 ? void 0 : user.userId);
     //alternative way
-    const isUserExist = yield user_model_1.User.findOne({ id: user === null || user === void 0 ? void 0 : user.userId }).select('+password');
+    const isUserExist = yield user_model_1.User.findOne({ id: userId }).select('+password');
     if (!isUserExist) {
         throw new ApiError_1.default(http_status_1.default.NOT_FOUND, 'User does not exist');
     }
@@ -125,6 +126,7 @@ const changePassword = (user, payload) => __awaiter(void 0, void 0, void 0, func
     // data update
     isUserExist.password = newPassword;
     isUserExist.needsChangePassword = false;
+    isUserExist.passwordChangedAt = new Date();
     // updating using save()
     isUserExist.save();
 });

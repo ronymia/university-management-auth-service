@@ -27,6 +27,11 @@ const userSchema = new mongoose_1.Schema({
         type: String,
         required: true,
     },
+    status: {
+        type: String,
+        enum: ['active', 'inactive', 'banned', 'pending'],
+        default: 'pending',
+    },
     password: {
         type: String,
         required: true,
