@@ -33,7 +33,7 @@ const auth = (...requiredRoles) => (req, res, next) => __awaiter(void 0, void 0,
         // check role
         if (requiredRoles.length &&
             !requiredRoles.includes(verifiedUser.role)) {
-            throw new ApiError_1.default(http_status_1.default.FORBIDDEN, 'You are not allowed to access this');
+            throw new ApiError_1.default(http_status_1.default.FORBIDDEN, 'You have no permission to access this');
         }
         // call next method
         next();

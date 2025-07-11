@@ -274,14 +274,33 @@ const updateUser = (id, payload) => __awaiter(void 0, void 0, void 0, function* 
     if (!getUser) {
         throw new ApiError_1.default(http_status_1.default.NOT_FOUND, 'User not found');
     }
-    // UPDATE USER
-    const result = yield user_model_1.User.findByIdAndUpdate({ _id: getUser._id }, payload, {
-        new: true,
-    })
-        .populate('admin')
-        .populate('faculty')
-        .populate('student');
-    return result;
+    // UPDATE SUPER ADMIN
+    if (getUser.role === user_1.ENUM_USER_ROLE.SUPER_ADMIN) {
+        //
+        return getUser;
+    }
+    else if (getUser.role === user_1.ENUM_USER_ROLE.ADMIN) {
+        // UPDATE ADMIN
+        const result = yield admin_model_1.Admin.findOneAndUpdate({ id: getUser.id }, payload, {
+            new: true,
+        }).populate('admin');
+        return result;
+    }
+    else if (getUser.role === user_1.ENUM_USER_ROLE.FACULTY) {
+        // UPDATE FACULTY
+        const result = yield faculty_model_1.Faculty.findOneAndUpdate({ id: getUser.id }, payload, {
+            new: true,
+        }).populate('faculty');
+        return result;
+    }
+    else if (getUser.role === user_1.ENUM_USER_ROLE.STUDENT) {
+        // UPDATE STUDENT
+        const result = yield student_model_1.Student.findOneAndUpdate({ id: getUser.id }, payload, {
+            new: true,
+        }).populate('student');
+        return result;
+    }
+    return null;
 });
 // DELETE USER
 const deleteUser = (id) => __awaiter(void 0, void 0, void 0, function* () {
