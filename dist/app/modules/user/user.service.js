@@ -245,9 +245,37 @@ const getAllUsers = (filters, paginationOptions) => __awaiter(void 0, void 0, vo
     }
     // QUERY
     const result = yield user_model_1.User.find(whereCondition)
-        .populate('admin')
-        .populate('faculty')
-        .populate('student');
+        .populate({
+        path: 'admin',
+        populate: {
+            path: 'managementDepartment',
+        },
+    })
+        .populate({
+        path: 'faculty',
+        populate: [
+            {
+                path: 'academicDepartment',
+            },
+            {
+                path: 'academicFaculty',
+            },
+        ],
+    })
+        .populate({
+        path: 'student',
+        populate: [
+            {
+                path: 'academicSemester',
+            },
+            {
+                path: 'academicDepartment',
+            },
+            {
+                path: 'academicFaculty',
+            },
+        ],
+    });
     // RETURNING RESPONSE
     return {
         meta: {
@@ -261,9 +289,37 @@ const getAllUsers = (filters, paginationOptions) => __awaiter(void 0, void 0, vo
 // GET SINGLE USER
 const getSingleUser = (id) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield user_model_1.User.findOne({ id: id })
-        .populate('admin')
-        .populate('faculty')
-        .populate('student');
+        .populate({
+        path: 'admin',
+        populate: {
+            path: 'managementDepartment',
+        },
+    })
+        .populate({
+        path: 'faculty',
+        populate: [
+            {
+                path: 'academicDepartment',
+            },
+            {
+                path: 'academicFaculty',
+            },
+        ],
+    })
+        .populate({
+        path: 'student',
+        populate: [
+            {
+                path: 'academicSemester',
+            },
+            {
+                path: 'academicDepartment',
+            },
+            {
+                path: 'academicFaculty',
+            },
+        ],
+    });
     return result;
 });
 // UPDATE USER
