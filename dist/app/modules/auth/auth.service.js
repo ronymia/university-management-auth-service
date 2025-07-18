@@ -50,6 +50,10 @@ const loginUser = (payload) => __awaiter(void 0, void 0, void 0, function* () {
             .populate('academicDepartment')
             .populate('academicFaculty');
     }
+    else if (isUserExist.role === 'super_admin') {
+        isUserExist === null || isUserExist === void 0 ? true : delete isUserExist.password;
+        getUserData = isUserExist;
+    }
     // create JWT token and refresh token
     const { id: userId, role, needsChangePassword } = isUserExist;
     const accessToken = jwtHelpers_1.jwtHelpers.createToken({ userId, role }, config_1.default.jwt.secret, config_1.default.jwt.expires_in);
