@@ -17,33 +17,30 @@ const redis_1 = require("redis");
 const config_1 = __importDefault(require("../config"));
 const logger_1 = require("./logger");
 const redisClient = (0, redis_1.createClient)({
-    // url: config.redis.url
-    // password: process.env.REDIS_PASSWORD,
     username: config_1.default.redis.userName,
     password: config_1.default.redis.password,
     socket: {
         host: config_1.default.redis.host,
         port: Number(config_1.default.redis.port),
+        family: 0,
     },
 });
 const redisPubClient = (0, redis_1.createClient)({
-    // url: config.redis.url
-    // password: process.env.REDIS_PASSWORD,
     username: config_1.default.redis.userName,
     password: config_1.default.redis.password,
     socket: {
         host: config_1.default.redis.host,
         port: Number(config_1.default.redis.port),
+        family: 0,
     },
 });
 const redisSubClient = (0, redis_1.createClient)({
-    // url: config.redis.url
-    // password: process.env.REDIS_PASSWORD,
     username: config_1.default.redis.userName,
     password: config_1.default.redis.password,
     socket: {
         host: config_1.default.redis.host,
         port: Number(config_1.default.redis.port),
+        family: 0,
     },
 });
 redisClient.on('connect', () => {
@@ -52,17 +49,31 @@ redisClient.on('connect', () => {
 redisClient.on('error', (err) => {
     logger_1.errorLogger.error('Redis client error', err);
 });
+// REDIS CONNECT
 const connect = () => __awaiter(void 0, void 0, void 0, function* () {
-    yield redisClient.connect();
-    yield redisPubClient.connect();
-    yield redisSubClient.connect();
+    try {
+        yield Promise.all([
+            redisClient.connect(),
+            redisPubClient.connect(),
+            redisSubClient.connect(),
+        ]);
+        // VERIFY CONNECTION
+        const pong = yield redisClient.ping();
+        logger_1.logger.info('Redis client connected', pong);
+    }
+    catch (error) {
+        logger_1.errorLogger.error('Redis client error', error);
+    }
 });
+// REDIS SET
 const set = (key, value, options) => __awaiter(void 0, void 0, void 0, function* () {
     yield redisClient.set(key, value, options);
 });
+// REDIS GET
 const get = (key) => __awaiter(void 0, void 0, void 0, function* () {
     return yield redisClient.get(key);
 });
+// REDIS DEL
 const del = (key) => __awaiter(void 0, void 0, void 0, function* () {
     yield redisClient.get(key);
 });

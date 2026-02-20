@@ -18,7 +18,7 @@ const loggerFormat = printf(({ level, message, label, timestamp }) => {
     return `${date.toDateString()} ${hours}:${minutes}:${seconds} } [${label}] ${level}: ${message}`;
 });
 // ✅ Writable log directory for serverless environments
-const baseLogPath = path_1.default.join('/tmp', 'logs', 'winston');
+const baseLogPath = path_1.default.join(process.cwd(), 'logs', 'winston');
 // Ensure log subdirectories exist
 ['successes', 'errors'].forEach((dir) => {
     const fullPath = path_1.default.join(baseLogPath, dir);
