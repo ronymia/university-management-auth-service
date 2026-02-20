@@ -33,6 +33,7 @@ const faculty_constant_1 = require("./faculty.constant");
 const user_model_1 = require("../user/user.model");
 const http_status_1 = __importDefault(require("http-status"));
 const redis_1 = require("../../../shared/redis");
+const academicFaculty_model_1 = require("../academicFaculty/academicFaculty.model");
 const academicDepartment_model_1 = require("../academicDepartment/academicDepartment.model");
 const getSingleFaculty = (id) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield faculty_model_1.Faculty.findOne({ id })
@@ -88,32 +89,53 @@ const getAllFaculties = (filters, paginationOptions) => __awaiter(void 0, void 0
 });
 const updateFaculty = (id, payload) => __awaiter(void 0, void 0, void 0, function* () {
     //
-    const { name } = payload, faculty = __rest(payload, ["name"]);
+    const { name, academicFaculty, academicDepartment } = payload, faculty = __rest(payload, ["name", "academicFaculty", "academicDepartment"]);
     //
     const isExist = yield faculty_model_1.Faculty.findOne({ id });
     if (!isExist) {
         throw new ApiError_1.default(http_status_1.default.NOT_FOUND, 'Faculty not found');
     }
-    // CHECK ACADEMIC DEPARTMENT
-    const getAcademicDepartment = yield academicDepartment_model_1.AcademicDepartment.findOne({
-        _id: payload === null || payload === void 0 ? void 0 : payload.academicDepartment,
-        academicFaculty: payload === null || payload === void 0 ? void 0 : payload.academicFaculty,
-    });
-    if (!getAcademicDepartment) {
-        throw new ApiError_1.default(http_status_1.default.NOT_FOUND, 'Academic department not found');
-    }
-    // console.log({ getAcademicDepartment });
-    //
     // Create a new object to hold the update data
-    const studentData = Object.assign({}, faculty);
+    const facultyData = Object.assign({}, faculty);
+    // Resolve syncIds to actual MongoDB _ids
+    let resolvedFacultyId = isExist.academicFaculty;
+    let resolvedDepartmentId = isExist.academicDepartment;
+    if (academicFaculty) {
+        const facultyDoc = yield academicFaculty_model_1.AcademicFaculty.findOne({
+            syncId: academicFaculty,
+        });
+        if (facultyDoc) {
+            facultyData.academicFaculty = facultyDoc._id;
+            resolvedFacultyId = facultyDoc._id;
+        }
+    }
+    if (academicDepartment) {
+        const departmentDoc = yield academicDepartment_model_1.AcademicDepartment.findOne({
+            syncId: academicDepartment,
+        });
+        if (departmentDoc) {
+            facultyData.academicDepartment = departmentDoc._id;
+            resolvedDepartmentId = departmentDoc._id;
+        }
+    }
+    // CHECK ACADEMIC DEPARTMENT
+    if (academicFaculty || academicDepartment) {
+        const getAcademicDepartment = yield academicDepartment_model_1.AcademicDepartment.findOne({
+            _id: resolvedDepartmentId,
+            academicFaculty: resolvedFacultyId,
+        });
+        if (!getAcademicDepartment) {
+            throw new ApiError_1.default(http_status_1.default.NOT_FOUND, 'Academic department not found for this faculty');
+        }
+    }
     // Update the nested name fields
     if (name && Object.keys(name).length > 0) {
         Object.keys(name).forEach((key) => {
-            studentData[`name.${key}`] = name[key];
+            facultyData[`name.${key}`] = name[key];
         });
     }
-    // Update the student document
-    const result = yield faculty_model_1.Faculty.findOneAndUpdate({ id }, studentData, {
+    // Update the faculty document
+    const result = yield faculty_model_1.Faculty.findOneAndUpdate({ id }, facultyData, {
         new: true,
     })
         .populate('academicDepartment')

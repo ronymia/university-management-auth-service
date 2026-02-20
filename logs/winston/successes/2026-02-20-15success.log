@@ -1,0 +1,5 @@
+Fri Feb 20 2026 15:46:31 } [UMS Auth Service] info: Redis client connected
+Fri Feb 20 2026 15:46:32 } [UMS Auth Service] info: Redis client connected
+Fri Feb 20 2026 15:46:34 } [UMS Auth Service] info: 🛢   Database is connected successfully
+Fri Feb 20 2026 15:46:34 } [UMS Auth Service] info: Application  listening on port 3001
+Fri Feb 20 2026 15:47:29 } [UMS Auth Service] info: SIGTERM is received

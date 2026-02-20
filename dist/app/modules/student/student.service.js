@@ -31,6 +31,9 @@ const paginationHelper_1 = require("../../../helpers/paginationHelper");
 const student_model_1 = require("./student.model");
 const student_constant_1 = require("./student.constant");
 const user_model_1 = require("../user/user.model");
+const academicSemester_model_1 = require("../academicSemester/academicSemester.model");
+const academicFaculty_model_1 = require("../academicFaculty/academicFaculty.model");
+const academicDepartment_model_1 = require("../academicDepartment/academicDepartment.model");
 const http_status_1 = __importDefault(require("http-status"));
 const redis_1 = require("../../../shared/redis");
 // GET SINGLE STUDENT
@@ -95,10 +98,31 @@ const updateStudent = (id, payload) => __awaiter(void 0, void 0, void 0, functio
     if (!isExist) {
         throw new ApiError_1.default(http_status_1.default.NOT_FOUND, 'Student not found');
     }
-    const { name, guardian, localGuardian } = payload, student = __rest(payload, ["name", "guardian", "localGuardian"]);
-    //
+    const { name, guardian, localGuardian, academicSemester, academicFaculty, academicDepartment } = payload, student = __rest(payload, ["name", "guardian", "localGuardian", "academicSemester", "academicFaculty", "academicDepartment"]);
     // Create a new object to hold the update data
     const studentData = Object.assign({}, student);
+    // Resolve syncIds to actual MongoDB _ids
+    if (academicSemester) {
+        const semester = yield academicSemester_model_1.AcademicSemester.findOne({
+            syncId: academicSemester,
+        });
+        if (semester)
+            studentData.academicSemester = semester._id;
+    }
+    if (academicFaculty) {
+        const faculty = yield academicFaculty_model_1.AcademicFaculty.findOne({
+            syncId: academicFaculty,
+        });
+        if (faculty)
+            studentData.academicFaculty = faculty._id;
+    }
+    if (academicDepartment) {
+        const department = yield academicDepartment_model_1.AcademicDepartment.findOne({
+            syncId: academicDepartment,
+        });
+        if (department)
+            studentData.academicDepartment = department._id;
+    }
     // Update the nested name fields
     if (name && Object.keys(name).length > 0) {
         Object.keys(name).forEach((key) => {
