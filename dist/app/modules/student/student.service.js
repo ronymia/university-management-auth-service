@@ -35,7 +35,7 @@ const academicSemester_model_1 = require("../academicSemester/academicSemester.m
 const academicFaculty_model_1 = require("../academicFaculty/academicFaculty.model");
 const academicDepartment_model_1 = require("../academicDepartment/academicDepartment.model");
 const http_status_1 = __importDefault(require("http-status"));
-const redis_1 = require("../../../shared/redis");
+const outbox_model_1 = require("../outbox/outbox.model");
 // GET SINGLE STUDENT
 const getSingleStudent = (id) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield student_model_1.Student.findOne({ id })
@@ -150,9 +150,14 @@ const updateStudent = (id, payload) => __awaiter(void 0, void 0, void 0, functio
         .populate('academicSemester')
         .populate('academicDepartment')
         .populate('academicFaculty');
-    // PUBLISH ON REDIS
+    // PUBLISH ON OUTBOX
     if (result) {
-        yield redis_1.RedisClient.publish(student_constant_1.EVENT_STUDENT_UPDATED, JSON.stringify(result));
+        yield outbox_model_1.Outbox.create([
+            {
+                eventType: student_constant_1.EVENT_STUDENT_UPDATED,
+                payload: JSON.stringify(result),
+            },
+        ]);
     }
     return result;
 });
@@ -173,17 +178,22 @@ const deleteStudent = (id) => __awaiter(void 0, void 0, void 0, function* () {
             throw new ApiError_1.default(http_status_1.default.NOT_FOUND, 'Fail to delete Student');
         }
         yield user_model_1.User.deleteOne({ id });
-        session.commitTransaction();
-        session.endSession();
-        // PUBLISH ON REDIS
+        // PUBLISH ON OUTBOX INSIDE TRANSACTION
         if (student) {
-            yield redis_1.RedisClient.publish(student_constant_1.EVENT_STUDENT_DELETED, JSON.stringify(student));
+            yield outbox_model_1.Outbox.create([
+                {
+                    eventType: student_constant_1.EVENT_STUDENT_DELETED,
+                    payload: JSON.stringify(student),
+                },
+            ], { session });
         }
+        yield session.commitTransaction();
+        yield session.endSession();
         return student;
     }
     catch (error) {
-        session.commitTransaction();
-        session.endSession();
+        yield session.abortTransaction();
+        yield session.endSession();
         throw error;
     }
 });

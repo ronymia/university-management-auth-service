@@ -25,6 +25,7 @@ const student_model_1 = require("../student/student.model");
 const loginUser = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     const user = new user_model_1.User();
     const { id, password } = payload;
+    console.log({ payload });
     const isUserExist = yield user.isUserExist(id);
     if (!isUserExist) {
         throw new ApiError_1.default(http_status_1.default.NOT_FOUND, ' User not found');
