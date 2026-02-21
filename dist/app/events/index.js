@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const academicDepartment_event_1 = __importDefault(require("../modules/academicDepartment/academicDepartment.event"));
 const academicFaculty_event_1 = __importDefault(require("../modules/academicFaculty/academicFaculty.event"));
 const academicSemester_event_1 = __importDefault(require("../modules/academicSemester/academicSemester.event"));
+const outbox_poller_1 = require("./outbox.poller");
 const subscribeToEvents = () => __awaiter(void 0, void 0, void 0, function* () {
     // ACADEMIC SEMESTER
     yield (0, academicSemester_event_1.default)();
@@ -22,5 +23,7 @@ const subscribeToEvents = () => __awaiter(void 0, void 0, void 0, function* () {
     yield (0, academicFaculty_event_1.default)();
     // ACADEMIC DEPARTMENT
     yield (0, academicDepartment_event_1.default)();
+    // OUTBOX POLLER
+    (0, outbox_poller_1.startOutboxPoller)();
 });
 exports.default = subscribeToEvents;

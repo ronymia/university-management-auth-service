@@ -35,7 +35,7 @@ const user_1 = require("../../../enums/user");
 const faculty_model_1 = require("../faculty/faculty.model");
 const admin_model_1 = require("../admin/admin.model");
 const http_status_1 = __importDefault(require("http-status"));
-const redis_1 = require("../../../shared/redis");
+const outbox_model_1 = require("../outbox/outbox.model");
 const user_constant_1 = require("./user.constant");
 const paginationHelper_1 = require("../../../helpers/paginationHelper");
 // Create Student
@@ -69,6 +69,26 @@ const createStudent = (student, user) => __awaiter(void 0, void 0, void 0, funct
             throw new ApiError_1.default(http_status_1.default.BAD_REQUEST, 'Failed to create student');
         }
         newUserData = newUser[0];
+        // Fetch populated version inside the transaction to publish
+        const populatedUser = yield user_model_1.User.findOne({ id: newUserData.id })
+            .session(session)
+            .populate({
+            path: 'student',
+            populate: [
+                { path: 'academicSemester' },
+                { path: 'academicDepartment' },
+                { path: 'academicFaculty' },
+            ],
+        });
+        if (populatedUser) {
+            yield outbox_model_1.Outbox.create([
+                {
+                    eventType: user_constant_1.EVENT_STUDENT_CREATED,
+                    payload: JSON.stringify(populatedUser.student),
+                },
+            ], { session });
+            newUserData = populatedUser;
+        }
         yield session.commitTransaction();
         yield session.endSession();
     }
@@ -76,26 +96,6 @@ const createStudent = (student, user) => __awaiter(void 0, void 0, void 0, funct
         yield session.abortTransaction();
         yield session.endSession();
         throw error;
-    }
-    if (newUserData) {
-        newUserData = yield user_model_1.User.findOne({ id: newUserData.id }).populate({
-            path: 'student',
-            populate: [
-                {
-                    path: 'academicSemester',
-                },
-                {
-                    path: 'academicDepartment',
-                },
-                {
-                    path: 'academicFaculty',
-                },
-            ],
-        });
-    }
-    // PUBLISH ON REDIS
-    if (newUserData) {
-        yield redis_1.RedisClient.publish(user_constant_1.EVENT_STUDENT_CREATED, JSON.stringify(newUserData.student));
     }
     return newUserData;
 });
@@ -128,6 +128,25 @@ const createFaculty = (faculty, user) => __awaiter(void 0, void 0, void 0, funct
             throw new ApiError_1.default(http_status_1.default.BAD_REQUEST, 'Failed to create faculty');
         }
         newUserData = newUser[0];
+        // Fetch populated version inside the transaction to publish
+        const populatedUser = yield user_model_1.User.findOne({ id: newUserData.id })
+            .session(session)
+            .populate({
+            path: 'faculty',
+            populate: [
+                { path: 'academicDepartment' },
+                { path: 'academicFaculty' },
+            ],
+        });
+        if (populatedUser) {
+            yield outbox_model_1.Outbox.create([
+                {
+                    eventType: user_constant_1.EVENT_FACULTY_CREATED,
+                    payload: JSON.stringify(populatedUser.faculty),
+                },
+            ], { session });
+            newUserData = populatedUser;
+        }
         yield session.commitTransaction();
         yield session.endSession();
     }
@@ -135,23 +154,6 @@ const createFaculty = (faculty, user) => __awaiter(void 0, void 0, void 0, funct
         yield session.abortTransaction();
         yield session.endSession();
         throw error;
-    }
-    if (newUserData) {
-        newUserData = yield user_model_1.User.findOne({ id: newUserData.id }).populate({
-            path: 'faculty',
-            populate: [
-                {
-                    path: 'academicDepartment',
-                },
-                {
-                    path: 'academicFaculty',
-                },
-            ],
-        });
-    }
-    // PUBLISH ON REDIS
-    if (newUserData) {
-        yield redis_1.RedisClient.publish(user_constant_1.EVENT_FACULTY_CREATED, JSON.stringify(newUserData.faculty));
     }
     return newUserData;
 });
@@ -185,6 +187,22 @@ const createAdmin = (admin, user) => __awaiter(void 0, void 0, void 0, function*
             throw new ApiError_1.default(http_status_1.default.BAD_REQUEST, 'Failed to create admin');
         }
         newUserAllData = newUser[0];
+        // Fetch populated version inside the transaction to publish
+        const populatedUser = yield user_model_1.User.findOne({ id: newUserAllData.id })
+            .session(session)
+            .populate({
+            path: 'admin',
+            populate: [{ path: 'managementDepartment' }],
+        });
+        if (populatedUser) {
+            yield outbox_model_1.Outbox.create([
+                {
+                    eventType: user_constant_1.EVENT_ADMIN_CREATED,
+                    payload: JSON.stringify(populatedUser.admin),
+                },
+            ], { session });
+            newUserAllData = populatedUser;
+        }
         yield session.commitTransaction();
         yield session.endSession();
     }
@@ -193,26 +211,12 @@ const createAdmin = (admin, user) => __awaiter(void 0, void 0, void 0, function*
         yield session.endSession();
         throw error;
     }
-    if (newUserAllData) {
-        newUserAllData = yield user_model_1.User.findOne({ id: newUserAllData.id }).populate({
-            path: 'admin',
-            populate: [
-                {
-                    path: 'managementDepartment',
-                },
-            ],
-        });
-    }
-    // PUBLISH ON REDIS
-    if (newUserAllData) {
-        yield redis_1.RedisClient.publish(user_constant_1.EVENT_ADMIN_CREATED, JSON.stringify(newUserAllData.admin));
-    }
     return newUserAllData;
 });
 // GET ALL USERS
 const getAllUsers = (filters, paginationOptions) => __awaiter(void 0, void 0, void 0, function* () {
     const { searchTerm } = filters, filtersData = __rest(filters, ["searchTerm"]);
-    const { page, limit, skip, sortBy, sortOrder } = paginationHelper_1.paginationHelper.calculatePagination(paginationOptions);
+    const { page, limit, sortBy, sortOrder } = paginationHelper_1.paginationHelper.calculatePagination(paginationOptions);
     // search and filters condition
     const andConditions = [];
     // ❌ Always exclude SUPER_ADMIN

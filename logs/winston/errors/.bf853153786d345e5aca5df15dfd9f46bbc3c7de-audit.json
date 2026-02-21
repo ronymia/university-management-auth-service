@@ -14,6 +14,21 @@
             "date": 1771586536200,
             "name": "/media/mdronymia/01bac949-202e-4ec3-ae81-5218df358709/university-management/university-management-backend/university-management-auth-service/logs/winston/errors/2026-02-20-17error.log",
             "hash": "05e99bb624f0a5908d5350ccab84332e21ac1e5cabc8ebd45cc37cc0a62d54c9"
+        },
+        {
+            "date": 1771592515911,
+            "name": "/media/mdronymia/01bac949-202e-4ec3-ae81-5218df358709/university-management/university-management-backend/university-management-auth-service/logs/winston/errors/2026-02-20-19error.log",
+            "hash": "753aedf834258768ae28d3a682a5f48c3b0b588cb54e9b191be761f4a9db8e0d"
+        },
+        {
+            "date": 1771653251106,
+            "name": "/media/mdronymia/01bac949-202e-4ec3-ae81-5218df358709/university-management/university-management-backend/university-management-auth-service/logs/winston/errors/2026-02-21-11error.log",
+            "hash": "6a1acfe2ec57a8b3235c886a97596461f9fd1a72c40c13303ae8af4f674a7c0b"
+        },
+        {
+            "date": 1771653959935,
+            "name": "/media/mdronymia/01bac949-202e-4ec3-ae81-5218df358709/university-management/university-management-backend/university-management-auth-service/logs/winston/errors/2026-02-21-12error.log",
+            "hash": "947426e3ea14357140d6781be8eec66f037ba592a694637acd9c64eb7b013982"
         }
     ],
     "hashType": "sha256"

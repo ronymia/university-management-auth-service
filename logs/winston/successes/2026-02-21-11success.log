@@ -1,0 +1,5 @@
+Sat Feb 21 2026 11:54:13 } [UMS Auth Service] info: Redis client connected
+Sat Feb 21 2026 11:54:14 } [UMS Auth Service] info: Redis client connected
+Sat Feb 21 2026 11:54:15 } [UMS Auth Service] info: Started Outbox Poller for reliable event publishing...
+Sat Feb 21 2026 11:54:16 } [UMS Auth Service] info: 🛢   Database is connected successfully
+Sat Feb 21 2026 11:54:16 } [UMS Auth Service] info: Application  listening on port 3001
